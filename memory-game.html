@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🃏 Lật Thẻ Bài</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --c1: #FF6B6B; --c2: #FFD93D; --c3: #6BCB77; --c4: #4D96FF;
+    --bg: #FFF9F0; --card-bg: #fff;
+    --text: #2C2C2A; --text2: #888;
+    --radius: 14px; --shadow: 0 4px 18px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; flex-direction: column; align-items: center; min-height: 100vh; padding: 24px 16px 40px; }
+  .screen.active { display: flex; }
+
+  /* ── HOME ── */
+  #home { background: linear-gradient(160deg, #FFF9F0 0%, #FFF0D6 100%); }
+  .home-title { font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-top: 24px; color: var(--text); }
+  .home-title span { color: var(--c1); }
+  .home-sub { font-size: 16px; color: var(--text2); margin: 6px 0 32px; }
+
+  .section-label { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); margin-bottom: 10px; align-self: flex-start; width: 100%; max-width: 480px; }
+
+  .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 480px; margin-bottom: 28px; }
+  .theme-card {
+    background: #fff; border-radius: var(--radius); border: 2.5px solid #eee;
+    padding: 16px 12px; text-align: center; cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  }
+  .theme-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .theme-card.selected { border-color: var(--c4); box-shadow: 0 0 0 3px rgba(77,150,255,0.18); }
+  .theme-card .tc-icon { font-size: 36px; display: block; margin-bottom: 6px; }
+  .theme-card .tc-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .theme-card .tc-desc { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  .level-row { display: flex; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 28px; }
+  .level-btn {
+    flex: 1; padding: 12px 0; border-radius: 10px; border: 2.5px solid #eee;
+    background: #fff; font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: all 0.15s; color: var(--text);
+  }
+  .level-btn .lv-size { font-size: 18px; display: block; }
+  .level-btn .lv-label { font-size: 10px; font-weight: 500; color: var(--text2); display: block; margin-top: 2px; }
+  .level-btn.selected { border-color: var(--c3); box-shadow: 0 0 0 3px rgba(107,203,119,0.2); }
+  .level-btn.lv2.selected { border-color: var(--c2); box-shadow: 0 0 0 3px rgba(255,217,61,0.25); }
+  .level-btn.lv3.selected { border-color: var(--c1); box-shadow: 0 0 0 3px rgba(255,107,107,0.2); }
+
+  /* Custom upload area */
+  .custom-upload { display: none; width: 100%; max-width: 480px; margin-bottom: 24px; }
+  .custom-upload.visible { display: block; }
+  .upload-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .upload-slot {
+    aspect-ratio: 1; border-radius: 10px; border: 2px dashed #ccc;
+    background: #fafafa; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; cursor: pointer;
+    font-size: 22px; color: #ccc; overflow: hidden; position: relative;
+    transition: border-color 0.15s;
+  }
+  .upload-slot:hover { border-color: var(--c4); color: var(--c4); }
+  .upload-slot img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+  .upload-slot input { display: none; }
+  .upload-slot .slot-num { font-size: 10px; color: #bbb; margin-top: 2px; }
+
+  .btn-play {
+    width: 100%; max-width: 480px; padding: 18px;
+    background: linear-gradient(135deg, var(--c1), #ff8f6b);
+    color: #fff; border: none; border-radius: 14px;
+    font-size: 20px; font-weight: 800; cursor: pointer;
+    letter-spacing: 0.5px; box-shadow: 0 6px 20px rgba(255,107,107,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-play:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(255,107,107,0.3); }
+
+  /* ── GAME SCREEN ── */
+  #game { background: var(--bg); }
+  .game-header { width: 100%; max-width: 600px; display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .btn-back { background: #fff; border: 1.5px solid #eee; border-radius: 10px; padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text); white-space: nowrap; }
+  .game-hud { flex: 1; display: flex; gap: 10px; }
+  .hud-pill {
+    flex: 1; background: #fff; border-radius: 10px; padding: 8px 12px;
+    text-align: center; border: 1.5px solid #eee; min-width: 0;
+  }
+  .hud-val { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1; }
+  .hud-lbl { font-size: 10px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* ── BOARD ── */
+  .board-wrap { width: 100%; max-width: 600px; }
+  .board { display: grid; gap: 8px; justify-content: center; }
+
+  .card { cursor: pointer; }
+  .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(.4,0,.2,1); border-radius: 12px; }
+  .card.flipped .card-inner, .card.matched .card-inner { transform: rotateY(180deg); }
+
+  .card-back, .card-front {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 12px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-back {
+    background: linear-gradient(135deg, #6C63FF 0%, #a78bfa 100%);
+    border: 2.5px solid #5a53d4;
+  }
+  .card-back-inner { font-size: 30px; opacity: 0.5; }
+
+  .card-front {
+    transform: rotateY(180deg);
+    background: #fff;
+    border: 2.5px solid #e5e7eb;
+    font-size: 42px;
+  }
+  .card-front img { width: 100%; height: 100%; object-fit: cover; }
+
+  .card.matched .card-front {
+    border-color: #6BCB77;
+    background: #f0fdf4;
+  }
+  .card.matched .card-inner { animation: matchPop 0.35s cubic-bezier(.175,.885,.32,1.275); }
+  @keyframes matchPop {
+    0% { transform: rotateY(180deg) scale(1); }
+    50% { transform: rotateY(180deg) scale(1.12); }
+    100% { transform: rotateY(180deg) scale(1); }
+  }
+  .card.wrong .card-inner { animation: wrongShake 0.3s ease; }
+  @keyframes wrongShake {
+    0%,100% { transform: rotateY(180deg) translateX(0); }
+    25%     { transform: rotateY(180deg) translateX(-6px); }
+    75%     { transform: rotateY(180deg) translateX(6px); }
+  }
+
+  /* ── WIN SCREEN ── */
+  #win { background: linear-gradient(160deg, #f0fdf4 0%, #dcfce7 100%); justify-content: center; }
+  .win-box { text-align: center; max-width: 380px; }
+  .win-trophy { font-size: 80px; line-height: 1; margin-bottom: 12px; animation: trophyBounce 0.7s cubic-bezier(.175,.885,.32,1.275); }
+  @keyframes trophyBounce { 0%{transform:scale(0)} 100%{transform:scale(1)} }
+  .win-title { font-size: 32px; font-weight: 800; color: #15803d; margin-bottom: 6px; }
+  .win-stats { display: flex; gap: 16px; justify-content: center; margin: 20px 0 28px; }
+  .win-stat { background: #fff; border-radius: 12px; padding: 14px 20px; min-width: 100px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+  .win-stat .ws-val { font-size: 26px; font-weight: 800; color: var(--text); }
+  .win-stat .ws-lbl { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+  .win-rank { font-size: 18px; margin-bottom: 24px; font-weight: 600; }
+  .win-btns { display: flex; gap: 12px; }
+  .win-btns button { flex: 1; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .btn-replay { background: linear-gradient(135deg, #6BCB77, #4ade80); color: #fff; box-shadow: 0 4px 14px rgba(107,203,119,0.4); }
+  .btn-home  { background: #fff; color: var(--text); border: 1.5px solid #e5e7eb !important; }
+
+  /* ── RANKING ── */
+  #ranking { background: var(--bg); }
+  .ranking-header { width: 100%; max-width: 480px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .ranking-title { font-size: 22px; font-weight: 800; }
+  .rank-tabs { display: flex; gap: 8px; width: 100%; max-width: 480px; margin-bottom: 16px; }
+  .rank-tab { flex: 1; padding: 9px; border-radius: 10px; border: 1.5px solid #eee; background: #fff; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text2); transition: all 0.15s; }
+  .rank-tab.active { background: var(--c4); color: #fff; border-color: var(--c4); }
+  .rank-list { width: 100%; max-width: 480px; }
+  .rank-empty { color: var(--text2); font-size: 15px; text-align: center; padding: 40px 0; }
+  .rank-item {
+    background: #fff; border-radius: 12px; border: 1.5px solid #eee;
+    padding: 12px 16px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .rank-pos { font-size: 20px; min-width: 32px; text-align: center; }
+  .rank-info { flex: 1; }
+  .rank-score { font-size: 18px; font-weight: 800; color: var(--text); }
+  .rank-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .rank-badge { font-size: 22px; }
+  .btn-clear { background: none; border: 1.5px solid #eee; border-radius: 10px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text2); }
+</style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<div id="home" class="screen active">
+  <h1 class="home-title">🃏 Lật <span>Thẻ</span> Bài</h1>
+  <p class="home-sub">Tìm các cặp thẻ giống nhau!</p>
+
+  <p class="section-label">🎨 Chọn chủ đề</p>
+  <div class="theme-grid">
+    <div class="theme-card selected" data-theme="fruit" onclick="selectTheme(this,'fruit')">
+      <span class="tc-icon">🍎</span>
+      <div class="tc-name">Trái cây</div>
+      <div class="tc-desc">Thơm ngon, bổ dưỡng</div>
+    </div>
+    <div class="theme-card" data-theme="animal" onclick="selectTheme(this,'animal')">
+      <span class="tc-icon">🐶</span>
+      <div class="tc-name">Con vật</div>
+      <div class="tc-desc">Đáng yêu các loài</div>
+    </div>
+    <div class="theme-card" data-theme="landmark" onclick="selectTheme(this,'landmark')">
+      <span class="tc-icon">🗼</span>
+      <div class="tc-name">Danh lam</div>
+      <div class="tc-desc">Nổi tiếng thế giới</div>
+    </div>
+    <div class="theme-card" data-theme="custom" onclick="selectTheme(this,'custom')">
+      <span class="tc-icon">📷</span>
+      <div class="tc-name">Ảnh của bạn</div>
+      <div class="tc-desc">Tải ảnh lên tùy ý</div>
+    </div>
+  </div>
+
+  <!-- Custom upload -->
+  <div class="custom-upload" id="custom-upload">
+    <p class="section-label" style="margin-bottom:8px">📁 Tải ảnh lên (cần đủ ảnh cho số cặp)</p>
+    <div class="upload-grid" id="upload-grid"></div>
+  </div>
+
+  <p class="section-label">🏆 Chọn độ khó</p>
+  <div class="level-row">
+    <button class="level-btn selected lv1" onclick="selectLevel(this,1)">
+      <span class="lv-size">4×4</span>
+      <span class="lv-label">Dễ · 8 cặp</span>
+    </button>
+    <button class="level-btn lv2" onclick="selectLevel(this,2)">
+      <span class="lv-size">4×5</span>
+      <span class="lv-label">TB · 10 cặp</span>
+    </button>
+    <button class="level-btn lv3" onclick="selectLevel(this,3)">
+      <span class="lv-size">4×6</span>
+      <span class="lv-label">Khó · 12 cặp</span>
+    </button>
+  </div>
+
+  <button class="btn-play" onclick="startGame()">▶ Bắt đầu chơi!</button>
+  <br>
+  <button class="btn-back" onclick="showRanking()" style="margin-top:12px;width:100%;max-width:480px;text-align:center">
+    🏅 Bảng xếp hạng
+  </button>
+</div>
+
+<!-- ══ GAME ══ -->
+<div id="game" class="screen">
+  <div class="game-header">
+    <button class="btn-back" onclick="goHome()">← Về nhà</button>
+    <div class="game-hud">
+      <div class="hud-pill">
+        <div class="hud-val" id="hud-time">0:00</div>
+        <div class="hud-lbl">Thời gian</div>
+      </div>
+      <div class="hud-pill">
+        <div class="hud-val" id="hud-moves">0</div>
+        <div class="hud-lbl">Lượt lật</div>
+      </div>
+      <div class="hud-pill">
+        <div class="hud-val" id="hud-found">0/0</div>
+        <div class="hud-lbl">Tìm được</div>
+      </div>
+    </div>
+  </div>
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+</div>
+
+<!-- ══ WIN ══ -->
+<div id="win" class="screen">
+  <div class="win-box">
+    <div class="win-trophy">🏆</div>
+    <div class="win-title">Xuất sắc!</div>
+    <div id="win-rank" class="win-rank"></div>
+    <div class="win-stats">
+      <div class="win-stat"><div class="ws-val" id="ws-time">—</div><div class="ws-lbl">Thời gian</div></div>
+      <div class="win-stat"><div class="ws-val" id="ws-moves">—</div><div class="ws-lbl">Lượt lật</div></div>
+      <div class="win-stat"><div class="ws-val" id="ws-score">—</div><div class="ws-lbl">Điểm</div></div>
+    </div>
+    <div class="win-btns">
+      <button class="btn-home"   onclick="goHome()">🏠 Về nhà</button>
+      <button class="btn-replay" onclick="restartGame()">🔄 Chơi lại</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RANKING ══ -->
+<div id="ranking" class="screen">
+  <div class="ranking-header" style="width:100%;max-width:480px">
+    <button class="btn-back" onclick="goHome()">← Quay lại</button>
+    <div class="ranking-title">🏅 Bảng xếp hạng</div>
+    <button class="btn-clear" onclick="clearRanking()" style="margin-left:auto">Xóa</button>
+  </div>
+  <div class="rank-tabs">
+    <button class="rank-tab active" onclick="switchRankTab(this,1)">4×4 Dễ</button>
+    <button class="rank-tab"       onclick="switchRankTab(this,2)">4×5 TB</button>
+    <button class="rank-tab"       onclick="switchRankTab(this,3)">4×6 Khó</button>
+  </div>
+  <div class="rank-list" id="rank-list"></div>
+</div>
+
+<script>
+// ═══ DATA ═══
+const THEMES = {
+  fruit:    ['🍎','🍊','🍋','🍇','🍓','🍑','🥝','🍍','🥭','🍒','🍌','🫐'],
+  animal:   ['🐶','🐱','🦊','🐸','🐼','🦋','🐬','🦁','🐨','🦄','🐧','🦉'],
+  landmark: ['🗼','🗽','🏯','🗿','🏰','⛩️','🕌','🏛️','🕍','🎡','🏟️','🌉'],
+};
+
+const LEVELS = {
+  1: {cols:4, rows:4, pairs:8},
+  2: {cols:5, rows:4, pairs:10},
+  3: {cols:6, rows:4, pairs:12},
+};
+
+const RANK_ICONS = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+
+let curTheme = 'fruit', curLevel = 1;
+let cards = [], flipped = [], matched = [];
+let moves = 0, seconds = 0, timerID = null, lock = false;
+let customImages = [];
+let currentRankTab = 1;
+
+// ═══ THEME / LEVEL SELECT ═══
+function selectTheme(el, theme) {
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  curTheme = theme;
+  const cu = document.getElementById('custom-upload');
+  if (theme === 'custom') { cu.classList.add('visible'); buildUploadGrid(); }
+  else cu.classList.remove('visible');
+}
+
+function selectLevel(el, lv) {
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  curLevel = lv;
+  if (curTheme === 'custom') buildUploadGrid();
+}
+
+// ═══ CUSTOM UPLOAD ═══
+function buildUploadGrid() {
+  const pairs = LEVELS[curLevel].pairs;
+  const grid = document.getElementById('upload-grid');
+  grid.innerHTML = '';
+  // keep cols <= 5
+  const cols = Math.min(pairs, 5);
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  while (customImages.length < pairs) customImages.push(null);
+  customImages = customImages.slice(0, pairs);
+
+  customImages.forEach((img, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'upload-slot';
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*';
+    inp.onchange = e => {
+      const file = e.target.files[0]; if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => { customImages[i] = ev.target.result; buildUploadGrid(); };
+      r.readAsDataURL(file);
+    };
+    slot.onclick = () => inp.click();
+    slot.appendChild(inp);
+    if (img) {
+      const im = document.createElement('img'); im.src = img; slot.appendChild(im);
+    } else {
+      slot.innerHTML += `<span>＋</span><span class="slot-num">${i+1}</span>`;
+    }
+    grid.appendChild(slot);
+  });
+}
+
+// ═══ NAVIGATION ═══
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome() { stopTimer(); showScreen('home'); }
+function showRanking() { currentRankTab = 1; showScreen('ranking'); renderRanking(); }
+
+// ═══ START GAME ═══
+function startGame() {
+  const {pairs} = LEVELS[curLevel];
+  let pool;
+  if (curTheme === 'custom') {
+    const filled = customImages.filter(Boolean);
+    if (filled.length < pairs) { alert(`Vui lòng tải lên đủ ${pairs} ảnh!`); return; }
+    pool = customImages.slice(0, pairs).map((src, i) => ({type:'img', val:src, id:i}));
+  } else {
+    pool = THEMES[curTheme].slice(0, pairs).map((em, i) => ({type:'emoji', val:em, id:i}));
+  }
+  const deck = shuffle([...pool.map(p=>({...p})), ...pool.map(p=>({...p}))]);
+  cards = deck; flipped = []; matched = []; moves = 0; seconds = 0; lock = false;
+
+  showScreen('game');
+  updateHUD();
+  buildBoard();
+  stopTimer();
+  timerID = setInterval(() => { seconds++; updateHUD(); }, 1000);
+}
+
+function restartGame() { startGame(); }
+
+// ═══ BOARD ═══
+function buildBoard() {
+  const {cols, rows} = LEVELS[curLevel];
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  // Calculate card size based on viewport
+  const vw = Math.min(window.innerWidth, 600) - 32;
+  const cardW = Math.floor((vw - (cols - 1) * 8) / cols);
+  const cardH = Math.min(cardW, Math.floor((window.innerHeight * 0.72 - (rows - 1) * 8) / rows));
+  const sz = Math.min(cardW, cardH, 120);
+
+  board.style.gridTemplateColumns = `repeat(${cols}, ${sz}px)`;
+
+  cards.forEach((c, idx) => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.width = sz + 'px'; div.style.height = sz + 'px';
+    const inner = document.createElement('div'); inner.className = 'card-inner';
+    const back = document.createElement('div'); back.className = 'card-back';
+    back.innerHTML = '<span class="card-back-inner">⭐</span>';
+    const front = document.createElement('div'); front.className = 'card-front';
+    if (c.type === 'img') {
+      const img = document.createElement('img'); img.src = c.val; front.appendChild(img);
+    } else {
+      front.style.fontSize = Math.floor(sz * 0.46) + 'px';
+      front.textContent = c.val;
+    }
+    inner.appendChild(back); inner.appendChild(front);
+    div.appendChild(inner);
+    div.addEventListener('click', () => flipCard(div, c, idx));
+    board.appendChild(div);
+  });
+}
+
+// ═══ FLIP LOGIC ═══
+function flipCard(div, c, idx) {
+  if (lock || div.classList.contains('flipped') || div.classList.contains('matched')) return;
+  div.classList.add('flipped');
+  flipped.push({div, c, idx});
+  if (flipped.length === 2) {
+    moves++;
+    updateHUD();
+    lock = true;
+    const [a, b] = flipped;
+    if (a.c.id === b.c.id) {
+      matched.push(a.c.id);
+      setTimeout(() => {
+        a.div.classList.add('matched'); b.div.classList.add('matched');
+        flipped = []; lock = false;
+        updateHUD();
+        if (matched.length === LEVELS[curLevel].pairs) onWin();
+      }, 300);
+    } else {
+      setTimeout(() => {
+        a.div.classList.add('wrong'); b.div.classList.add('wrong');
+        setTimeout(() => {
+          a.div.classList.remove('flipped','wrong');
+          b.div.classList.remove('flipped','wrong');
+          flipped = []; lock = false;
+        }, 300);
+      }, 450);
+    }
+  }
+}
+
+// ═══ HUD ═══
+function updateHUD() {
+  const {pairs} = LEVELS[curLevel];
+  const m = Math.floor(seconds/60), s = seconds%60;
+  document.getElementById('hud-time').textContent = m + ':' + String(s).padStart(2,'0');
+  document.getElementById('hud-moves').textContent = moves;
+  document.getElementById('hud-found').textContent = matched.length + '/' + pairs;
+}
+
+function stopTimer() { clearInterval(timerID); timerID = null; }
+
+// ═══ WIN ═══
+function onWin() {
+  stopTimer();
+  const score = calcScore();
+  saveRecord(score);
+  const m = Math.floor(seconds/60), s = seconds%60;
+  document.getElementById('ws-time').textContent = m + ':' + String(s).padStart(2,'0');
+  document.getElementById('ws-moves').textContent = moves;
+  document.getElementById('ws-score').textContent = score;
+  const rank = getRank(score);
+  document.getElementById('win-rank').textContent = rank.emoji + ' ' + rank.label;
+  setTimeout(() => showScreen('win'), 400);
+}
+
+function calcScore() {
+  const {pairs} = LEVELS[curLevel];
+  const base = pairs * 1000;
+  const timeBonus = Math.max(0, 300 - seconds) * 5;
+  const movePenalty = Math.max(0, moves - pairs) * 30;
+  return Math.max(100, base + timeBonus - movePenalty);
+}
+
+function getRank(score) {
+  const {pairs} = LEVELS[curLevel];
+  const perfect = pairs * 1000 + 300 * 5;
+  const pct = score / perfect;
+  if (pct >= 0.85) return {emoji:'⭐⭐⭐', label:'Xuất sắc!'};
+  if (pct >= 0.65) return {emoji:'⭐⭐', label:'Rất tốt!'};
+  return {emoji:'⭐', label:'Hoàn thành!'};
+}
+
+// ═══ RANKING ═══
+function saveRecord(score) {
+  const key = 'memory_rank_lv' + curLevel;
+  const list = JSON.parse(localStorage.getItem(key) || '[]');
+  const m = Math.floor(seconds/60), s = seconds%60;
+  list.push({ score, moves, time: m+':'+String(s).padStart(2,'0'), ts: Date.now() });
+  list.sort((a,b) => b.score - a.score);
+  localStorage.setItem(key, JSON.stringify(list.slice(0,5)));
+}
+
+function renderRanking() {
+  const key = 'memory_rank_lv' + currentRankTab;
+  const list = JSON.parse(localStorage.getItem(key) || '[]');
+  const el = document.getElementById('rank-list');
+  document.querySelectorAll('.rank-tab').forEach((t,i) => t.classList.toggle('active', i+1===currentRankTab));
+  if (!list.length) { el.innerHTML = '<div class="rank-empty">Chưa có kết quả nào 🎮</div>'; return; }
+  el.innerHTML = list.map((r,i) => `
+    <div class="rank-item">
+      <div class="rank-pos">${RANK_ICONS[i]||'·'}</div>
+      <div class="rank-info">
+        <div class="rank-score">${r.score} điểm</div>
+        <div class="rank-meta">⏱ ${r.time} &nbsp;·&nbsp; 🖱 ${r.moves} lượt</div>
+      </div>
+      <div class="rank-badge">${getRankBadge(i)}</div>
+    </div>`).join('');
+}
+
+function getRankBadge(i) {
+  return ['🥇','🥈','🥉','🎖️','🎗️'][i] || '';
+}
+
+function switchRankTab(el, lv) {
+  currentRankTab = lv;
+  renderRanking();
+}
+
+function clearRanking() {
+  if (confirm('Xóa toàn bộ bảng xếp hạng?')) {
+    [1,2,3].forEach(l => localStorage.removeItem('memory_rank_lv'+l));
+    renderRanking();
+  }
+}
+
+// ═══ UTILS ═══
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+</script>
+</body>
+</html>
