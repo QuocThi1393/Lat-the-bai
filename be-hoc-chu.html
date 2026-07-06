@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bé Học Chữ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fff7ec;--ink:#3a3140;--soft:#fffdf9;--shadow:rgba(58,49,64,.18);
+    --accent:#ff8a5b;--accent-dark:#e96a3b;
+    --good:#3ec46d;--good-dark:#2da557;--bad:#ff6b6b;
+    --tile:#fff;--tile-edge:#e8ddcb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{margin:0;font-family:'Nunito',system-ui,sans-serif;color:var(--ink);
+    background:radial-gradient(900px 500px at 15% -10%,#ffe6c7 0%,transparent 60%),radial-gradient(900px 500px at 110% 110%,#ffd9e6 0%,transparent 55%),var(--bg);
+    overflow-x:hidden;user-select:none}
+  .wrap{max-width:820px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:16px}
+
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:8px;min-height:48px}
+  .topbar h1{font-family:'Fredoka',sans-serif;font-weight:700;font-size:24px;margin:0;color:var(--accent-dark);letter-spacing:.5px;flex:1}
+  .iconbtn{border:none;cursor:pointer;background:var(--soft);border-radius:16px;padding:10px 14px;font-size:18px;font-weight:800;font-family:'Fredoka',sans-serif;color:var(--ink);box-shadow:0 4px 0 var(--tile-edge);transition:transform .08s,box-shadow .08s;display:inline-flex;align-items:center;gap:6px}
+  .iconbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--tile-edge)}
+  .stars{background:#fff;border-radius:16px;padding:8px 14px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:18px;color:#f5a623;box-shadow:0 4px 0 #f0e2c8}
+
+  .screen{flex:1;display:flex;flex-direction:column;animation:pop .35s ease both}
+  .hidden{display:none !important}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+  .home-hero{text-align:center;margin:4px 0 12px}
+  .home-hero .big{font-family:'Fredoka',sans-serif;font-weight:700;font-size:30px;color:var(--accent-dark);margin:0}
+  .home-hero .sub{font-size:15px;color:#9a8f86;margin:4px 0 0;font-weight:700}
+
+  /* Công tắc Cơ bản / Nâng cao */
+  .leveltoggle{display:flex;align-items:center;justify-content:center;gap:12px;margin:6px 0 6px}
+  .lvl-label{font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;color:var(--accent-dark);transition:color .2s}
+  .lvl-label.off{color:#c9bdb0}
+  .switch{position:relative;width:64px;height:34px;border:none;border-radius:20px;background:#e8ddcb;cursor:pointer;box-shadow:inset 0 2px 4px rgba(0,0,0,.12);transition:background .2s;padding:0}
+  .switch.on{background:#7c5cff}
+  .knob{position:absolute;top:4px;left:4px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:left .2s}
+  .switch.on .knob{left:34px}
+  .age-hint{text-align:center;font-size:13px;font-weight:800;color:#9b8bff;margin:0 0 10px}
+
+  .modepick{display:flex;gap:10px;background:#fff;border-radius:22px;padding:6px;margin:8px auto 14px;box-shadow:0 4px 0 #f0e2c8;width:fit-content}
+  .modebtn{border:none;cursor:pointer;background:transparent;border-radius:16px;padding:10px 18px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:17px;color:#b0a59b;transition:.15s}
+  .modebtn.active{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-dark)}
+
+  .theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:13px}
+  .theme-card{border:none;cursor:pointer;border-radius:24px;padding:18px 10px;text-align:center;color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;box-shadow:0 7px 0 rgba(0,0,0,.12),0 12px 22px var(--shadow);transition:transform .1s,box-shadow .1s}
+  .theme-card:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(0,0,0,.12)}
+  .theme-card .emoji{font-size:40px;display:block;line-height:1}
+  .theme-card .name{font-size:19px;display:block;margin-top:6px;text-shadow:0 2px 0 rgba(0,0,0,.12)}
+  .theme-card .count{font-size:12px;font-weight:700;opacity:.92;display:block;margin-top:2px;font-family:'Nunito'}
+
+  .flash{background:var(--soft);border-radius:32px;padding:24px 20px 22px;text-align:center;box-shadow:0 12px 30px var(--shadow);margin-top:6px;position:relative;animation:cardin .45s cubic-bezier(.2,1.2,.4,1) both}
+  @keyframes cardin{from{opacity:0;transform:translateY(18px) rotate(-2deg) scale(.92)}to{opacity:1;transform:none}}
+  .flash.shake{animation:shake .4s}
+  @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+
+  .pic{font-size:100px;line-height:1;margin:2px 0 4px;display:inline-block;filter:drop-shadow(0 8px 10px rgba(0,0,0,.12));animation:float 3s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .vi-name{font-size:19px;font-weight:800;color:#9a8f86;margin:0 0 2px}
+  .bigword{font-family:'Fredoka',sans-serif;font-weight:700;font-size:48px;letter-spacing:3px;color:var(--ink);margin:14px 0 2px;word-break:break-word}
+
+  .speakbtn{border:none;cursor:pointer;background:#fff;border-radius:50%;width:54px;height:54px;font-size:26px;box-shadow:0 5px 0 var(--tile-edge);margin:8px 0 14px;transition:transform .08s,box-shadow .08s}
+  .speakbtn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--tile-edge)}
+
+  .word{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin-bottom:20px;font-family:'Fredoka',sans-serif;font-weight:700}
+  .letter{font-size:40px;color:var(--ink);min-width:26px;text-align:center;letter-spacing:1px}
+  .slot{font-size:40px;min-width:44px;height:56px;border-radius:14px;border:4px dashed var(--accent);background:#fff3ea;color:var(--accent-dark);display:inline-flex;align-items:center;justify-content:center;font-weight:700;transition:all .25s}
+  .slot.filled{border-style:solid;border-color:var(--good);background:#e6f8ec;color:var(--good-dark);transform:scale(1.05)}
+
+  .prompt{font-size:18px;font-weight:800;color:#b0a59b;margin:0 0 12px}
+  .choices{display:flex;justify-content:center;gap:16px;margin-top:4px;flex-wrap:wrap}
+  .tile{border:none;cursor:pointer;width:84px;height:84px;border-radius:20px;background:var(--tile);color:var(--ink);font-family:'Fredoka',sans-serif;font-weight:700;font-size:44px;box-shadow:0 7px 0 var(--tile-edge),0 10px 18px var(--shadow);transition:transform .1s,box-shadow .1s,background .2s}
+  .tile:active{transform:translateY(5px);box-shadow:0 2px 0 var(--tile-edge)}
+  .tile.correct{background:var(--good);color:#fff;box-shadow:0 7px 0 var(--good-dark);animation:bump .4s}
+  .tile.wrong{background:var(--bad);color:#fff;box-shadow:0 7px 0 #d84a4a;animation:nope .4s}
+  .tile.lock{pointer-events:none}
+  .imgtile{width:96px;height:96px;font-size:52px}
+  @keyframes bump{0%,100%{transform:none}40%{transform:translateY(-12px) scale(1.12)}}
+  @keyframes nope{0%,100%{transform:none}25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
+
+  .feedback{text-align:center;font-family:'Fredoka',sans-serif;font-weight:700;font-size:25px;margin-top:18px;min-height:34px;color:var(--good-dark)}
+  .nextbtn{display:block;margin:14px auto 0;border:none;cursor:pointer;background:var(--good);color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;font-size:22px;padding:14px 34px;border-radius:22px;box-shadow:0 6px 0 var(--good-dark);transition:transform .08s,box-shadow .08s}
+  .nextbtn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--good-dark)}
+
+  .progress{height:14px;background:#fff;border-radius:20px;overflow:hidden;margin:18px 4px 4px;box-shadow:inset 0 2px 4px rgba(0,0,0,.08)}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,#ffce4d,#ff9d4d);border-radius:20px;transition:width .4s;width:0}
+  .progress-label{text-align:center;font-weight:800;color:#b0a59b;font-size:14px;margin-top:6px}
+
+  .win{text-align:center;padding-top:24px;animation:pop .4s both}
+  .win .trophy{font-size:108px;animation:float 2.4s ease-in-out infinite}
+  .win h2{font-family:'Fredoka',sans-serif;font-size:32px;color:var(--accent-dark);margin:8px 0 0}
+  .win .score{font-family:'Fredoka',sans-serif;font-size:46px;color:var(--good-dark);margin:8px 0 0}
+  .win p{font-size:18px;font-weight:800;color:#9a8f86;margin:6px 0 20px}
+
+  .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+  .confetti b{position:absolute;top:-20px;width:12px;height:18px;border-radius:3px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
+
+  .copyright{text-align:center;font-size:12px;color:#c4b9ac;font-weight:700;padding:18px 0 8px;margin-top:auto}
+
+  @media (max-width:430px){
+    .pic{font-size:84px}.letter,.slot{font-size:32px}.slot{min-width:38px;height:48px}
+    .tile{width:72px;height:72px;font-size:36px}.imgtile{width:86px;height:86px;font-size:46px}
+    .bigword{font-size:38px}.theme-card .emoji{font-size:36px}.topbar h1{font-size:20px}
+    .theme-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <button class="iconbtn" id="backBtn" style="display:none">⬅️ Về</button>
+    <h1 id="title">🎈 Bé Học Chữ</h1>
+    <span class="stars" id="starBox">⭐ 0</span>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="homeScreen">
+    <div class="home-hero"><p class="big">Chọn cách chơi & chủ đề!</p></div>
+
+    <div class="leveltoggle">
+      <span class="lvl-label" id="lblBasic">🧒 Cơ bản</span>
+      <button class="switch" id="advToggle" role="switch" aria-checked="false"><span class="knob"></span></button>
+      <span class="lvl-label off" id="lblAdv">🎓 Nâng cao</span>
+    </div>
+    <p class="age-hint hidden" id="ageHint">Dành cho bạn lớn 12–15 tuổi • Sai là qua câu mới, cuối bài tổng kết điểm</p>
+
+    <div class="modepick">
+      <button class="modebtn active" data-mode="letter">🔤 Điền chữ</button>
+      <button class="modebtn" data-mode="image">🖼️ Chọn hình</button>
+    </div>
+    <p class="home-hero sub" id="modeDesc" style="margin:-6px 0 16px">Nhìn hình → điền chữ còn thiếu 🧩</p>
+
+    <div class="theme-grid" id="themeGrid"></div>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen hidden" id="gameScreen">
+    <div class="flash" id="flash">
+      <div id="letterView">
+        <span class="pic" id="pic">🍎</span>
+        <p class="vi-name" id="viName">Quả táo</p>
+      </div>
+      <div id="imageView" class="hidden">
+        <p class="bigword" id="bigword">APPLE</p>
+      </div>
+
+      <button class="speakbtn" id="speakBtn" title="Nghe lại">🔊</button>
+
+      <div id="letterPlay">
+        <div class="word" id="word"></div>
+        <p class="prompt">Chọn chữ đúng 👇</p>
+        <div class="choices" id="choices"></div>
+      </div>
+
+      <div id="imagePlay" class="hidden">
+        <p class="prompt">Chọn hình đúng 👇</p>
+        <div class="choices" id="imgChoices"></div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="nextbtn hidden" id="nextBtn">Thẻ tiếp theo ➡️</button>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="progress-label" id="progLabel"></div>
+  </div>
+
+  <!-- WIN -->
+  <div class="screen hidden" id="winScreen">
+    <div class="win">
+      <div class="trophy">🏆</div>
+      <h2 id="winHead">Hoàn thành!</h2>
+      <div class="score hidden" id="winScore"></div>
+      <p id="winText">Bé giỏi quá!</p>
+      <button class="nextbtn" id="playAgain" style="background:var(--accent);box-shadow:0 6px 0 var(--accent-dark)">Chơi lại 🔁</button>
+      <br>
+      <button class="iconbtn" id="winHome" style="margin-top:14px">🏠 Chọn chủ đề khác</button>
+    </div>
+  </div>
+
+  <div class="copyright">Copyright © 2026 Nguyễn Quốc Thi.</div>
+</div>
+<div class="confetti hidden" id="confetti"></div>
+
+<script>
+/* =================== CHẾ ĐỘ CƠ BẢN: 7 chủ đề x 10 thẻ =================== */
+const BASIC = [
+  { name:'Trái cây', emoji:'🍎', color:'#ff7a7a', cards:[
+    {emoji:'🍎',word:'APPLE',vi:'Quả táo',blank:2,choices:['P','B','D']},
+    {emoji:'🍌',word:'BANANA',vi:'Quả chuối',blank:0,choices:['B','P','D']},
+    {emoji:'🍊',word:'ORANGE',vi:'Quả cam',blank:4,choices:['G','J','K']},
+    {emoji:'🍇',word:'GRAPE',vi:'Quả nho',blank:3,choices:['P','B','D']},
+    {emoji:'🍒',word:'CHERRY',vi:'Quả anh đào',blank:0,choices:['C','S','K']},
+    {emoji:'🍋',word:'LEMON',vi:'Quả chanh',blank:2,choices:['M','N','W']},
+    {emoji:'🍑',word:'PEACH',vi:'Quả đào',blank:3,choices:['C','K','S']},
+    {emoji:'🥭',word:'MANGO',vi:'Quả xoài',blank:0,choices:['M','N','W']},
+    {emoji:'🍉',word:'WATERMELON',vi:'Quả dưa hấu',blank:0,choices:['W','V','M']},
+    {emoji:'🍓',word:'STRAWBERRY',vi:'Quả dâu tây',blank:4,choices:['W','V','M']},
+  ]},
+  { name:'Động vật', emoji:'🐶', color:'#ffae5b', cards:[
+    {emoji:'🐶',word:'DOG',vi:'Con chó',blank:0,choices:['D','B','P']},
+    {emoji:'🐱',word:'CAT',vi:'Con mèo',blank:0,choices:['C','K','S']},
+    {emoji:'🦁',word:'LION',vi:'Con sư tử',blank:0,choices:['L','R','N']},
+    {emoji:'🐯',word:'TIGER',vi:'Con hổ',blank:2,choices:['G','J','K']},
+    {emoji:'🐘',word:'ELEPHANT',vi:'Con voi',blank:3,choices:['P','B','F']},
+    {emoji:'🐵',word:'MONKEY',vi:'Con khỉ',blank:3,choices:['K','C','G']},
+    {emoji:'🐻',word:'BEAR',vi:'Con gấu',blank:0,choices:['B','P','D']},
+    {emoji:'🐷',word:'PIG',vi:'Con heo',blank:0,choices:['P','B','D']},
+    {emoji:'🐰',word:'RABBIT',vi:'Con thỏ',blank:2,choices:['B','D','P']},
+    {emoji:'🦊',word:'FOX',vi:'Con cáo',blank:2,choices:['X','S','Z']},
+  ]},
+  { name:'Rau củ', emoji:'🥕', color:'#7bc96f', cards:[
+    {emoji:'🥕',word:'CARROT',vi:'Củ cà rốt',blank:0,choices:['C','K','S']},
+    {emoji:'🥔',word:'POTATO',vi:'Củ khoai tây',blank:0,choices:['P','B','D']},
+    {emoji:'🍅',word:'TOMATO',vi:'Quả cà chua',blank:2,choices:['M','N','W']},
+    {emoji:'🌽',word:'CORN',vi:'Bắp ngô',blank:0,choices:['C','K','G']},
+    {emoji:'🧅',word:'ONION',vi:'Củ hành',blank:0,choices:['O','A','U']},
+    {emoji:'🌶️',word:'PEPPER',vi:'Quả ớt',blank:2,choices:['P','B','D']},
+    {emoji:'🥦',word:'BROCCOLI',vi:'Bông cải xanh',blank:0,choices:['B','P','D']},
+    {emoji:'🍄',word:'MUSHROOM',vi:'Cây nấm',blank:0,choices:['M','N','W']},
+    {emoji:'🥒',word:'CUCUMBER',vi:'Quả dưa leo',blank:0,choices:['C','K','S']},
+    {emoji:'🧄',word:'GARLIC',vi:'Củ tỏi',blank:0,choices:['G','K','C']},
+  ]},
+  { name:'Cơ thể', emoji:'👀', color:'#ff9ec4', cards:[
+    {emoji:'👁️',word:'EYE',vi:'Mắt',blank:1,choices:['Y','I','U']},
+    {emoji:'👂',word:'EAR',vi:'Tai',blank:0,choices:['E','A','I']},
+    {emoji:'👃',word:'NOSE',vi:'Mũi',blank:0,choices:['N','M','L']},
+    {emoji:'👄',word:'MOUTH',vi:'Miệng',blank:0,choices:['M','N','W']},
+    {emoji:'✋',word:'HAND',vi:'Bàn tay',blank:0,choices:['H','A','E']},
+    {emoji:'🦶',word:'FOOT',vi:'Bàn chân',blank:0,choices:['F','V','P']},
+    {emoji:'🦵',word:'LEG',vi:'Cái chân',blank:0,choices:['L','R','N']},
+    {emoji:'💪',word:'ARM',vi:'Cánh tay',blank:1,choices:['R','L','N']},
+    {emoji:'🦷',word:'TOOTH',vi:'Cái răng',blank:0,choices:['T','D','P']},
+    {emoji:'👅',word:'TONGUE',vi:'Cái lưỡi',blank:2,choices:['N','M','L']},
+  ]},
+  { name:'Màu sắc', emoji:'🎨', color:'#6fc3ff', cards:[
+    {emoji:'🔴',word:'RED',vi:'Màu đỏ',blank:0,choices:['R','L','N']},
+    {emoji:'🔵',word:'BLUE',vi:'Màu xanh dương',blank:0,choices:['B','P','D']},
+    {emoji:'🟢',word:'GREEN',vi:'Màu xanh lá',blank:0,choices:['G','K','C']},
+    {emoji:'🟡',word:'YELLOW',vi:'Màu vàng',blank:2,choices:['L','R','I']},
+    {emoji:'🌸',word:'PINK',vi:'Màu hồng',blank:0,choices:['P','B','D']},
+    {emoji:'⚫',word:'BLACK',vi:'Màu đen',blank:3,choices:['C','K','S']},
+    {emoji:'⚪',word:'WHITE',vi:'Màu trắng',blank:1,choices:['H','A','E']},
+    {emoji:'🟠',word:'ORANGE',vi:'Màu cam',blank:0,choices:['O','A','U']},
+    {emoji:'🟣',word:'PURPLE',vi:'Màu tím',blank:3,choices:['P','B','D']},
+    {emoji:'🟤',word:'BROWN',vi:'Màu nâu',blank:0,choices:['B','P','D']},
+  ]},
+  { name:'Con số', emoji:'🔢', color:'#9d8bff', cards:[
+    {emoji:'1️⃣',word:'ONE',vi:'Số một',blank:0,choices:['O','A','U']},
+    {emoji:'2️⃣',word:'TWO',vi:'Số hai',blank:1,choices:['W','V','U']},
+    {emoji:'3️⃣',word:'THREE',vi:'Số ba',blank:1,choices:['H','R','E']},
+    {emoji:'4️⃣',word:'FOUR',vi:'Số bốn',blank:0,choices:['F','V','P']},
+    {emoji:'5️⃣',word:'FIVE',vi:'Số năm',blank:2,choices:['V','B','F']},
+    {emoji:'6️⃣',word:'SIX',vi:'Số sáu',blank:2,choices:['X','S','Z']},
+    {emoji:'7️⃣',word:'SEVEN',vi:'Số bảy',blank:2,choices:['V','B','F']},
+    {emoji:'8️⃣',word:'EIGHT',vi:'Số tám',blank:2,choices:['G','J','K']},
+    {emoji:'9️⃣',word:'NINE',vi:'Số chín',blank:0,choices:['N','M','L']},
+    {emoji:'🔟',word:'TEN',vi:'Số mười',blank:0,choices:['T','D','P']},
+  ]},
+  { name:'Phương tiện', emoji:'🚗', color:'#5fd39a', cards:[
+    {emoji:'🚗',word:'CAR',vi:'Xe hơi',blank:0,choices:['C','K','S']},
+    {emoji:'🚌',word:'BUS',vi:'Xe buýt',blank:0,choices:['B','P','D']},
+    {emoji:'🚆',word:'TRAIN',vi:'Tàu hỏa',blank:0,choices:['T','D','P']},
+    {emoji:'✈️',word:'PLANE',vi:'Máy bay',blank:0,choices:['P','B','D']},
+    {emoji:'⛵',word:'BOAT',vi:'Thuyền',blank:0,choices:['B','P','D']},
+    {emoji:'🚲',word:'BIKE',vi:'Xe đạp',blank:2,choices:['K','C','G']},
+    {emoji:'🚚',word:'TRUCK',vi:'Xe tải',blank:3,choices:['C','K','S']},
+    {emoji:'🚕',word:'TAXI',vi:'Xe taxi',blank:2,choices:['X','S','Z']},
+    {emoji:'🚢',word:'SHIP',vi:'Tàu thủy',blank:1,choices:['H','A','E']},
+    {emoji:'🚀',word:'ROCKET',vi:'Tên lửa',blank:2,choices:['C','K','S']},
+  ]},
+];
+
+/* =================== CHẾ ĐỘ NÂNG CAO: 20 chủ đề x 20 thẻ =================== */
+/* Thẻ chỉ cần [emoji, WORD, nghĩa] — ô trống & lựa chọn được tạo tự động. */
+function tri(a){return a.map(([emoji,word,vi])=>({emoji,word,vi}))}
+const ADV = [
+  {name:'Động từ',emoji:'🏃',color:'#7c5cff',cards:tri([
+    ['🏊','SWIM','Bơi'],['📖','STUDY','Học'],['🎨','DRAW','Vẽ'],['🏃','RUN','Chạy'],['🤸','JUMP','Nhảy'],
+    ['📚','READ','Đọc'],['✍️','WRITE','Viết'],['🍳','COOK','Nấu ăn'],['💃','DANCE','Khiêu vũ'],['🎤','SING','Hát'],
+    ['🧗','CLIMB','Leo trèo'],['🚗','DRIVE','Lái xe'],['🖌️','PAINT','Tô màu'],['🔨','BUILD','Xây dựng'],['👩‍🏫','TEACH','Dạy học'],
+    ['🧹','CLEAN','Lau dọn'],['✈️','TRAVEL','Du lịch'],['👂','LISTEN','Lắng nghe'],['🗣️','SPEAK','Nói'],['🤔','THINK','Suy nghĩ'],
+  ])},
+  {name:'Động vật',emoji:'🦒',color:'#ff8a5b',cards:tri([
+    ['🐬','DOLPHIN','Cá heo'],['🦒','GIRAFFE','Hươu cao cổ'],['🦘','KANGAROO','Chuột túi'],['🐧','PENGUIN','Chim cánh cụt'],['🐊','CROCODILE','Cá sấu'],
+    ['🐙','OCTOPUS','Bạch tuộc'],['🦋','BUTTERFLY','Con bướm'],['🐿️','SQUIRREL','Con sóc'],['🐆','LEOPARD','Báo đốm'],['🦔','HEDGEHOG','Con nhím'],
+    ['🦏','RHINO','Tê giác'],['🐢','TURTLE','Con rùa'],['🦩','FLAMINGO','Hồng hạc'],['🐺','WOLF','Chó sói'],['🦚','PEACOCK','Con công'],
+    ['🐹','HAMSTER','Chuột hamster'],['🐍','SNAKE','Con rắn'],['🦝','RACCOON','Gấu mèo'],['🦍','GORILLA','Khỉ đột'],['🦅','EAGLE','Đại bàng'],
+  ])},
+  {name:'Thực phẩm',emoji:'🍚',color:'#ffb14e',cards:tri([
+    ['🍍','PINEAPPLE','Quả dứa'],['🥥','COCONUT','Quả dừa'],['🍈','MELON','Dưa lưới'],['🍐','PEAR','Quả lê'],['🥝','KIWI','Quả kiwi'],
+    ['🍆','EGGPLANT','Cà tím'],['🥬','CABBAGE','Bắp cải'],['🎃','PUMPKIN','Bí ngô'],['🌰','CHESTNUT','Hạt dẻ'],['🌶️','CHILI','Quả ớt'],
+    ['🥜','PEANUT','Đậu phộng'],['🍞','BREAD','Bánh mì'],['🧀','CHEESE','Phô mai'],['🥚','EGG','Quả trứng'],['🍯','HONEY','Mật ong'],
+    ['🍚','RICE','Cơm'],['🍜','NOODLE','Mì'],['🦐','SHRIMP','Con tôm'],['🐟','FISH','Con cá'],['🥩','STEAK','Thịt bò'],
+  ])},
+  {name:'Nghề nghiệp',emoji:'👩‍⚕️',color:'#48c0e0',cards:tri([
+    ['👨‍⚕️','DOCTOR','Bác sĩ'],['👩‍🏫','TEACHER','Giáo viên'],['👷','ENGINEER','Kỹ sư'],['👨‍✈️','PILOT','Phi công'],['👨‍🌾','FARMER','Nông dân'],
+    ['👩‍⚕️','NURSE','Y tá'],['👨‍⚖️','LAWYER','Luật sư'],['👨‍🍳','CHEF','Đầu bếp'],['🦷','DENTIST','Nha sĩ'],['🚰','PLUMBER','Thợ ống nước'],
+    ['📐','ARCHITECT','Kiến trúc sư'],['🔬','SCIENTIST','Nhà khoa học'],['💂','SOLDIER','Người lính'],['🎨','ARTIST','Họa sĩ'],['🎤','SINGER','Ca sĩ'],
+    ['🕺','DANCER','Vũ công'],['✍️','WRITER','Nhà văn'],['🔧','MECHANIC','Thợ máy'],['🧑‍🚒','FIREFIGHTER','Lính cứu hỏa'],['📷','PHOTOGRAPHER','Nhiếp ảnh gia'],
+  ])},
+  {name:'Trường học',emoji:'🏫',color:'#f06292',cards:tri([
+    ['📕','BOOK','Quyển sách'],['✏️','PENCIL','Bút chì'],['🖊️','PEN','Bút mực'],['📏','RULER','Cây thước'],['📓','NOTEBOOK','Quyển vở'],
+    ['🎒','BACKPACK','Cặp sách'],['✂️','SCISSORS','Cái kéo'],['🖍️','CRAYON','Bút màu'],['🧮','ABACUS','Bàn tính'],['🖌️','BRUSH','Cọ vẽ'],
+    ['🗺️','MAP','Bản đồ'],['🌍','GLOBE','Quả địa cầu'],['🔬','MICROSCOPE','Kính hiển vi'],['📚','LIBRARY','Thư viện'],['🏫','SCHOOL','Trường học'],
+    ['📝','EXAM','Bài thi'],['🧪','SCIENCE','Khoa học'],['🎓','DIPLOMA','Bằng tốt nghiệp'],['🕰️','CLOCK','Đồng hồ'],['💡','IDEA','Ý tưởng'],
+  ])},
+  {name:'Đại dương',emoji:'🐠',color:'#26c6da',cards:tri([
+    ['🐠','FISH','Con cá'],['🦈','SHARK','Cá mập'],['🐳','WHALE','Cá voi'],['🐬','DOLPHIN','Cá heo'],['🐙','OCTOPUS','Bạch tuộc'],
+    ['🦑','SQUID','Mực ống'],['🦐','SHRIMP','Con tôm'],['🦞','LOBSTER','Tôm hùm'],['🦀','CRAB','Con cua'],['🐚','SHELL','Vỏ sò'],
+    ['🐢','TURTLE','Rùa biển'],['🐡','PUFFER','Cá nóc'],['🐌','SNAIL','Ốc sên'],['🌊','WAVE','Sóng biển'],['⚓','ANCHOR','Mỏ neo'],
+    ['🚢','SHIP','Tàu thủy'],['🏝️','ISLAND','Hòn đảo'],['🏖️','BEACH','Bãi biển'],['🦭','SEAL','Hải cẩu'],['🐧','PENGUIN','Cánh cụt'],
+  ])},
+  {name:'Thiên nhiên',emoji:'🏔️',color:'#66bb6a',cards:tri([
+    ['🏔️','MOUNTAIN','Núi'],['🌊','OCEAN','Đại dương'],['🏞️','RIVER','Dòng sông'],['🌲','FOREST','Rừng'],['🏜️','DESERT','Sa mạc'],
+    ['🏝️','ISLAND','Hòn đảo'],['🌋','VOLCANO','Núi lửa'],['🌈','RAINBOW','Cầu vồng'],['⚡','LIGHTNING','Tia sét'],['❄️','SNOW','Tuyết'],
+    ['🌵','CACTUS','Xương rồng'],['🍂','LEAF','Chiếc lá'],['🌻','SUNFLOWER','Hoa hướng dương'],['🌙','MOON','Mặt trăng'],['⭐','STAR','Ngôi sao'],
+    ['☀️','SUN','Mặt trời'],['☁️','CLOUD','Đám mây'],['🔥','FIRE','Lửa'],['💧','WATER','Nước'],['⛰️','HILL','Ngọn đồi'],
+  ])},
+  {name:'Thời tiết',emoji:'🌦️',color:'#5c9ce6',cards:tri([
+    ['☀️','SUNNY','Trời nắng'],['☁️','CLOUDY','Nhiều mây'],['🌧️','RAINY','Trời mưa'],['❄️','SNOWY','Có tuyết'],['💨','WINDY','Gió lớn'],
+    ['⛈️','STORMY','Giông bão'],['🌫️','FOGGY','Sương mù'],['⚡','THUNDER','Sấm sét'],['🌈','RAINBOW','Cầu vồng'],['🧊','ICE','Băng'],
+    ['🌡️','TEMPERATURE','Nhiệt độ'],['🌪️','TORNADO','Lốc xoáy'],['🥶','FREEZING','Lạnh cóng'],['🥵','HOT','Nóng bức'],['🌤️','CLEAR','Quang đãng'],
+    ['💧','DROP','Giọt nước'],['☔','UMBRELLA','Cái dù'],['🌙','NIGHT','Ban đêm'],['🌅','SUNRISE','Bình minh'],['🌇','SUNSET','Hoàng hôn'],
+  ])},
+  {name:'Thể thao',emoji:'⚽',color:'#ef5350',cards:tri([
+    ['⚽','SOCCER','Bóng đá'],['🏀','BASKETBALL','Bóng rổ'],['🎾','TENNIS','Quần vợt'],['🏊','SWIMMING','Bơi lội'],['🚴','CYCLING','Đạp xe'],
+    ['🥊','BOXING','Quyền anh'],['⛸️','SKATING','Trượt băng'],['🎿','SKIING','Trượt tuyết'],['🏄','SURFING','Lướt sóng'],['⚾','BASEBALL','Bóng chày'],
+    ['🏐','VOLLEYBALL','Bóng chuyền'],['🏸','BADMINTON','Cầu lông'],['🤸','GYMNASTICS','Thể dục'],['🤼','WRESTLING','Đấu vật'],['🏹','ARCHERY','Bắn cung'],
+    ['🏏','CRICKET','Bóng gậy'],['🏒','HOCKEY','Khúc côn cầu'],['🚣','ROWING','Chèo thuyền'],['🥋','KARATE','Võ karate'],['⛳','GOLF','Đánh gôn'],
+  ])},
+  {name:'Quần áo',emoji:'👕',color:'#ab7df0',cards:tri([
+    ['👕','SHIRT','Áo thun'],['👖','JEANS','Quần jean'],['🧥','JACKET','Áo khoác'],['🧶','SWEATER','Áo len'],['👗','DRESS','Váy đầm'],
+    ['🩳','SHORTS','Quần đùi'],['🧦','SOCKS','Vớ tất'],['🧤','GLOVES','Găng tay'],['🧣','SCARF','Khăn quàng'],['👒','HAT','Cái mũ'],
+    ['👟','SHOES','Đôi giày'],['👢','BOOTS','Giày bốt'],['🩴','SANDALS','Dép'],['👔','TIE','Cà vạt'],['👜','HANDBAG','Túi xách'],
+    ['👓','GLASSES','Mắt kính'],['⌚','WATCH','Đồng hồ'],['💍','RING','Chiếc nhẫn'],['👑','CROWN','Vương miện'],['🎒','BACKPACK','Ba lô'],
+  ])},
+  {name:'Trong nhà',emoji:'🛋️',color:'#8d6e63',cards:tri([
+    ['🛏️','BED','Cái giường'],['🛋️','SOFA','Ghế sofa'],['🪑','CHAIR','Cái ghế'],['🚪','DOOR','Cái cửa'],['🛁','BATHTUB','Bồn tắm'],
+    ['🚽','TOILET','Bồn cầu'],['🚿','SHOWER','Vòi sen'],['🧹','BROOM','Cây chổi'],['🕯️','CANDLE','Cây nến'],['💡','LAMP','Cái đèn'],
+    ['🧼','SOAP','Xà phòng'],['🧴','SHAMPOO','Dầu gội'],['🗑️','TRASH','Thùng rác'],['🔑','KEY','Chìa khóa'],['🕰️','CLOCK','Đồng hồ'],
+    ['📺','TELEVISION','Cái tivi'],['☎️','TELEPHONE','Điện thoại'],['🖼️','PICTURE','Bức tranh'],['🧺','BASKET','Cái giỏ'],['🔌','PLUG','Phích cắm'],
+  ])},
+  {name:'Nhà bếp',emoji:'🍴',color:'#ff7043',cards:tri([
+    ['🍴','FORK','Cái nĩa'],['🔪','KNIFE','Con dao'],['🥄','SPOON','Cái muỗng'],['🍽️','PLATE','Cái đĩa'],['🥣','BOWL','Cái tô'],
+    ['🍵','TEACUP','Tách trà'],['🍶','BOTTLE','Cái chai'],['🍳','PAN','Cái chảo'],['🥡','TAKEOUT','Hộp đựng'],['🧊','ICE','Đá lạnh'],
+    ['🧂','SALT','Muối'],['🥫','CAN','Lon hộp'],['🍾','WINE','Rượu vang'],['🧇','WAFFLE','Bánh quế'],['🥢','CHOPSTICKS','Đôi đũa'],
+    ['🧈','BUTTER','Bơ'],['☕','COFFEE','Cà phê'],['🍯','HONEY','Mật ong'],['🧁','CUPCAKE','Bánh nướng'],['🍪','COOKIE','Bánh quy'],
+  ])},
+  {name:'Cảm xúc',emoji:'😊',color:'#ffca28',cards:tri([
+    ['😊','HAPPY','Vui vẻ'],['😢','SAD','Buồn bã'],['😠','ANGRY','Tức giận'],['😱','SCARED','Sợ hãi'],['🤩','EXCITED','Phấn khích'],
+    ['😰','NERVOUS','Lo lắng'],['😴','SLEEPY','Buồn ngủ'],['😲','SURPRISED','Ngạc nhiên'],['😕','CONFUSED','Bối rối'],['😎','PROUD','Tự hào'],
+    ['😭','CRYING','Khóc'],['😍','LOVE','Yêu thích'],['😂','LAUGH','Cười'],['😳','SHY','Ngại ngùng'],['🥱','BORED','Chán'],
+    ['🤢','SICK','Buồn nôn'],['😌','CALM','Bình tĩnh'],['🤔','CURIOUS','Tò mò'],['😤','UPSET','Bực bội'],['🥳','CHEERFUL','Hớn hở'],
+  ])},
+  {name:'Gia đình',emoji:'👨‍👩‍👧',color:'#ec407a',cards:tri([
+    ['👩','MOTHER','Mẹ'],['👨','FATHER','Bố'],['👧','SISTER','Chị gái'],['👦','BROTHER','Anh trai'],['👵','GRANDMA','Bà'],
+    ['👴','GRANDPA','Ông'],['👶','BABY','Em bé'],['🧑','COUSIN','Anh em họ'],['🧕','AUNT','Cô dì'],['👲','UNCLE','Chú bác'],
+    ['👰','BRIDE','Cô dâu'],['🤵','GROOM','Chú rể'],['🧓','ELDER','Người lớn tuổi'],['🧒','CHILD','Đứa trẻ'],['👯','TWINS','Sinh đôi'],
+    ['🐕','PET','Thú cưng'],['🏠','HOME','Mái nhà'],['💑','COUPLE','Cặp đôi'],['👨‍👩‍👧‍👦','FAMILY','Gia đình'],['❤️','LOVE','Tình thương'],
+  ])},
+  {name:'Quốc gia',emoji:'🌍',color:'#42a5f5',cards:tri([
+    ['🇻🇳','VIETNAM','Việt Nam'],['🇯🇵','JAPAN','Nhật Bản'],['🇫🇷','FRANCE','Nước Pháp'],['🇩🇪','GERMANY','Nước Đức'],['🇧🇷','BRAZIL','Bra-xin'],
+    ['🇨🇦','CANADA','Ca-na-đa'],['🇮🇹','ITALY','Nước Ý'],['🇪🇬','EGYPT','Ai Cập'],['🇮🇳','INDIA','Ấn Độ'],['🇲🇽','MEXICO','Mê-xi-cô'],
+    ['🇷🇺','RUSSIA','Nước Nga'],['🇪🇸','SPAIN','Tây Ban Nha'],['🇨🇳','CHINA','Trung Quốc'],['🇰🇷','KOREA','Hàn Quốc'],['🇹🇭','THAILAND','Thái Lan'],
+    ['🇬🇧','ENGLAND','Nước Anh'],['🇬🇷','GREECE','Hy Lạp'],['🇺🇸','AMERICA','Nước Mỹ'],['🇦🇺','AUSTRALIA','Nước Úc'],['🇸🇬','SINGAPORE','Sing-ga-po'],
+  ])},
+  {name:'Vũ trụ',emoji:'🚀',color:'#5c6bc0',cards:tri([
+    ['🚀','ROCKET','Tên lửa'],['🪐','PLANET','Hành tinh'],['⭐','STAR','Ngôi sao'],['🌙','MOON','Mặt trăng'],['☀️','SUN','Mặt trời'],
+    ['🌍','EARTH','Trái đất'],['🌌','GALAXY','Thiên hà'],['☄️','COMET','Sao chổi'],['👽','ALIEN','Người ngoài hành tinh'],['🛸','UFO','Đĩa bay'],
+    ['🔭','TELESCOPE','Kính thiên văn'],['👨‍🚀','ASTRONAUT','Phi hành gia'],['🛰️','SATELLITE','Vệ tinh'],['🌠','METEOR','Sao băng'],['🌑','ECLIPSE','Nhật thực'],
+    ['🌕','FULLMOON','Trăng tròn'],['🌟','STARLIGHT','Ánh sao'],['🌎','GLOBE','Địa cầu'],['🍎','GRAVITY','Trọng lực'],['🔄','ORBIT','Quỹ đạo'],
+  ])},
+  {name:'Âm nhạc',emoji:'🎵',color:'#ba68c8',cards:tri([
+    ['🎸','GUITAR','Đàn ghi-ta'],['🎹','PIANO','Đàn piano'],['🎻','VIOLIN','Vĩ cầm'],['🥁','DRUMS','Cái trống'],['🎺','TRUMPET','Kèn trumpet'],
+    ['🎷','SAXOPHONE','Kèn saxophone'],['🪕','BANJO','Đàn banjo'],['🎤','MICROPHONE','Micro'],['🎵','MELODY','Giai điệu'],['🎼','NOTE','Nốt nhạc'],
+    ['🎧','HEADPHONE','Tai nghe'],['📻','RADIO','Đài radio'],['🔊','SPEAKER','Cái loa'],['🎚️','VOLUME','Âm lượng'],['🎙️','STUDIO','Phòng thu'],
+    ['🎶','SONG','Bài hát'],['💿','ALBUM','Đĩa nhạc'],['🎫','TICKET','Vé'],['🕺','DANCING','Nhảy múa'],['🎉','CONCERT','Hòa nhạc'],
+  ])},
+  {name:'Công nghệ',emoji:'💻',color:'#26a69a',cards:tri([
+    ['💻','LAPTOP','Máy tính xách tay'],['🖥️','COMPUTER','Máy tính'],['⌨️','KEYBOARD','Bàn phím'],['🖱️','MOUSE','Chuột máy tính'],['📱','PHONE','Điện thoại'],
+    ['🖨️','PRINTER','Máy in'],['📷','CAMERA','Máy ảnh'],['🔋','BATTERY','Cục pin'],['🔌','CHARGER','Bộ sạc'],['💾','DISK','Đĩa lưu trữ'],
+    ['📡','ANTENNA','Ăng-ten'],['📶','SIGNAL','Sóng'],['🤖','ROBOT','Người máy'],['🎮','GAME','Trò chơi'],['💡','BULB','Bóng đèn'],
+    ['🔦','FLASHLIGHT','Đèn pin'],['📺','SCREEN','Màn hình'],['⏰','ALARM','Báo thức'],['🧲','MAGNET','Nam châm'],['🛰️','NETWORK','Mạng lưới'],
+  ])},
+  {name:'Xe cộ',emoji:'🚁',color:'#78909c',cards:tri([
+    ['🚁','HELICOPTER','Trực thăng'],['🛩️','AIRPLANE','Máy bay'],['🚤','SPEEDBOAT','Ca nô'],['⛴️','FERRY','Phà'],['🚂','LOCOMOTIVE','Đầu máy'],
+    ['🏍️','MOTORCYCLE','Xe máy'],['🛵','SCOOTER','Xe tay ga'],['🚜','TRACTOR','Máy kéo'],['🚑','AMBULANCE','Xe cứu thương'],['🚒','FIRETRUCK','Xe cứu hỏa'],
+    ['🚓','POLICE','Xe cảnh sát'],['🚐','VAN','Xe tải nhỏ'],['🛺','RICKSHAW','Xe ba bánh'],['🚎','TROLLEY','Xe điện'],['🛴','KICKSCOOTER','Xe trượt'],
+    ['🛹','SKATEBOARD','Ván trượt'],['⛵','SAILBOAT','Thuyền buồm'],['🎈','BALLOON','Khinh khí cầu'],['🚉','STATION','Nhà ga'],['⚓','ANCHOR','Mỏ neo'],
+  ])},
+  {name:'Tính từ',emoji:'📏',color:'#26c281',cards:tri([
+    ['🐘','BIG','To lớn'],['🐜','SMALL','Nhỏ bé'],['🏃','FAST','Nhanh'],['🐢','SLOW','Chậm chạp'],['🏋️','HEAVY','Nặng'],
+    ['🍃','LIGHT','Nhẹ'],['📏','LONG','Dài'],['📐','SHORT','Ngắn'],['💪','STRONG','Mạnh mẽ'],['🤕','WEAK','Yếu ớt'],
+    ['🔥','HOT','Nóng'],['🧊','COLD','Lạnh'],['💰','EXPENSIVE','Đắt tiền'],['💸','CHEAP','Rẻ'],['🌟','BEAUTIFUL','Xinh đẹp'],
+    ['⚡','DANGEROUS','Nguy hiểm'],['🛡️','SAFE','An toàn'],['🏰','ANCIENT','Cổ kính'],['🚀','MODERN','Hiện đại'],['😋','DELICIOUS','Ngon'],
+  ])},
+];
+
+const PRAISE=['Giỏi quá! 🎉','Tuyệt vời! 🌟','Chính xác! 👏','Xuất sắc! 🥳','Hay lắm! 💖'];
+const RETRY =['Thử lại nhé! 🙂','Gần đúng rồi! 💪','Cố lên nào! ✨'];
+
+/* ===== Phát âm (ưu tiên giọng nữ tiếng Anh) ===== */
+let voices=[];
+function loadVoices(){ voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : []; }
+if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
+const FEMALE=['female','woman','samantha','victoria','karen','moira','tessa','fiona','zira','susan','allison','ava','serena','salli','joanna','kimberly','sandy','shelley','nicky','google us english','google uk english female'];
+const MALE  =['male','man','daniel','alex','fred','david','mark','rishi','oliver','thomas','matthew','justin','reed','rocko','eddy','aaron','google uk english male'];
+function pickFemaleVoice(lang){
+  if(!voices.length) loadVoices();
+  const base=lang.split('-')[0];
+  let list=voices.filter(v=>v.lang && (v.lang===lang || v.lang.replace('_','-').toLowerCase().startsWith(base)));
+  if(!list.length) list=voices.slice();
+  if(!list.length) return null;
+  const score=v=>{const n=v.name.toLowerCase();let s=0; if(FEMALE.some(h=>n.includes(h)))s+=10; if(MALE.some(h=>n.includes(h)))s-=10; if(v.lang===lang)s+=2; if(n.includes('google'))s+=1; return s;};
+  list.sort((a,b)=>score(b)-score(a));
+  return list[0];
+}
+function speakEN(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=0.8; u.pitch=1.25;
+  const v=pickFemaleVoice('en-US'); if(v){u.voice=v;u.lang=v.lang;}
+  try{window.speechSynthesis.speak(u);}catch(e){}
+}
+
+/* ===== Hiệu ứng âm thanh đúng / sai ===== */
+let actx;
+function audio(){ try{ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume(); }catch(e){} return actx; }
+function tone(freq,start,dur,type,gain){
+  const a=audio(); if(!a) return;
+  const o=a.createOscillator(),g=a.createGain();
+  o.type=type||'sine'; o.frequency.value=freq; o.connect(g); g.connect(a.destination);
+  const t=a.currentTime+start;
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(gain||0.2,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t); o.stop(t+dur+0.03);
+}
+function sfxCorrect(){ tone(660,0,0.15,'triangle',0.28); tone(880,0.12,0.18,'triangle',0.28); tone(1320,0.26,0.3,'triangle',0.22); }
+function sfxWrong(){ tone(240,0,0.16,'square',0.16); tone(170,0.13,0.22,'square',0.16); }
+
+/* ===== Tạo câu hỏi tự động (cho chế độ nâng cao) ===== */
+const GROUPS=[['A','E','I','O','U','Y'],['B','P','D'],['C','K','G','Q'],['S','Z','X'],['M','N','W'],['F','V'],['L','R'],['T','D'],['J','G']];
+function confus(letter){ const g=GROUPS.find(x=>x.includes(letter)); return g?g.filter(x=>x!==letter):[]; }
+function genQuestion(word){
+  const letters=word.split('');
+  const idxs=letters.map((_,i)=>i).filter(i=>/[A-Z]/.test(letters[i]));
+  const blank=idxs[Math.random()*idxs.length|0];
+  const correct=word[blank];
+  let pool=shuffle(confus(correct));
+  const distract=[];
+  for(const p of pool){ if(distract.length<2 && p!==correct && !distract.includes(p)) distract.push(p); }
+  const ALL='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  while(distract.length<2){ const r=ALL[Math.random()*26|0]; if(r!==correct && !distract.includes(r)) distract.push(r); }
+  return {blank, correct, choices:shuffle([correct,...distract])};
+}
+
+/* ===== Trạng thái ===== */
+let level='basic', mode='letter', theme=null, order=[], idx=0, stars=0, correctCount=0, locked=false;
+const $=id=>document.getElementById(id);
+const DATA=()=> level==='advanced'?ADV:BASIC;
+
+/* công tắc cấp độ */
+const advToggle=$('advToggle');
+advToggle.onclick=()=>{
+  const on = advToggle.getAttribute('aria-checked')!=='true';
+  advToggle.setAttribute('aria-checked', on?'true':'false');
+  advToggle.classList.toggle('on',on);
+  level = on?'advanced':'basic';
+  $('lblBasic').classList.toggle('off',on);
+  $('lblAdv').classList.toggle('off',!on);
+  $('ageHint').classList.toggle('hidden',!on);
+  document.documentElement.style.setProperty('--accent', on?'#7c5cff':'#ff8a5b');
+  document.documentElement.style.setProperty('--accent-dark', on?'#5b3fd6':'#e96a3b');
+  buildHome();
+};
+
+document.querySelectorAll('.modebtn').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.modebtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); mode=b.dataset.mode;
+    $('modeDesc').textContent = mode==='letter' ? 'Nhìn hình → điền chữ còn thiếu 🧩' : 'Nghe & đọc chữ → chọn hình đúng 🖼️';
+  };
+});
+
+function buildHome(){
+  const grid=$('themeGrid'); grid.innerHTML='';
+  DATA().forEach(t=>{
+    const b=document.createElement('button');
+    b.className='theme-card'; b.style.background=t.color;
+    b.innerHTML=`<span class="emoji">${t.emoji}</span><span class="name">${t.name}</span><span class="count">${t.cards.length} thẻ</span>`;
+    b.onclick=()=>startTheme(t);
+    grid.appendChild(b);
+  });
+}
+function show(s){['homeScreen','gameScreen','winScreen'].forEach(x=>$(x).classList.add('hidden'));$(s).classList.remove('hidden');$('backBtn').style.display=(s==='homeScreen')?'none':'inline-flex';}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function startTheme(t){
+  audio();
+  theme=t; idx=0; correctCount=0;
+  order=shuffle(t.cards.map((_,i)=>i));
+  document.documentElement.style.setProperty('--accent',t.color);
+  $('title').textContent=t.emoji+' '+t.name;
+  show('gameScreen'); renderCard();
+}
+
+function renderCard(){
+  locked=false;
+  const card=theme.cards[order[idx]];
+  $('feedback').textContent=''; $('feedback').style.color='var(--good-dark)';
+  $('nextBtn').classList.add('hidden');
+  $('bar').style.width=(idx/theme.cards.length*100)+'%';
+  $('progLabel').textContent=`Thẻ ${idx+1} / ${theme.cards.length}`;
+  if(mode==='letter') renderLetter(card); else renderImage(card);
+  setTimeout(()=>speakEN(card.word),350);   // ĐỌC TIẾNG ANH khi mở thẻ
+}
+
+function renderLetter(card){
+  $('letterView').classList.remove('hidden'); $('letterPlay').classList.remove('hidden');
+  $('imageView').classList.add('hidden'); $('imagePlay').classList.add('hidden');
+  $('pic').textContent=card.emoji; $('viName').textContent=card.vi;
+
+  let blank, choices, correct;
+  if(card.choices){ blank=card.blank; choices=card.choices; correct=card.word[blank]; }
+  else { const q=genQuestion(card.word); blank=q.blank; choices=q.choices; correct=q.correct; }
+
+  const w=$('word'); w.innerHTML='';
+  card.word.split('').forEach((ch,i)=>{
+    if(i===blank){ const slot=document.createElement('span'); slot.className='slot'; slot.id='slot'; slot.textContent='?'; w.appendChild(slot); }
+    else{ const sp=document.createElement('span'); sp.className='letter'; sp.textContent=ch; w.appendChild(sp); }
+  });
+
+  const ch=$('choices'); ch.innerHTML='';
+  shuffle(choices).forEach(letter=>{
+    const t=document.createElement('button'); t.className='tile'; t.textContent=letter;
+    t.onclick=()=>answer(t, letter===correct, card, correct, 'letter');
+    ch.appendChild(t);
+  });
+}
+
+function renderImage(card){
+  $('imageView').classList.remove('hidden'); $('imagePlay').classList.remove('hidden');
+  $('letterView').classList.add('hidden'); $('letterPlay').classList.add('hidden');
+  $('bigword').textContent=card.word;
+
+  const others=theme.cards.filter(c=>c.emoji!==card.emoji);
+  const opts=shuffle([card,...shuffle(others).slice(0,2)]);
+  const ch=$('imgChoices'); ch.innerHTML='';
+  opts.forEach(opt=>{
+    const t=document.createElement('button'); t.className='tile imgtile'; t.textContent=opt.emoji;
+    t.onclick=()=>answer(t, opt.emoji===card.emoji, card, card.word, 'image');
+    ch.appendChild(t);
+  });
+}
+
+function markCorrectTile(sel, val){ document.querySelectorAll(sel+' .tile').forEach(t=>{ if(t.textContent===val) t.classList.add('correct'); }); }
+
+function answer(btn, isCorrect, card, correct, kind){
+  if(locked) return;
+  if(isCorrect){
+    if(kind==='letter'){ const s=$('slot'); s.textContent=correct; s.classList.add('filled'); }
+    onCorrect(btn,card);
+  } else {
+    if(level==='advanced') onWrongAdvanced(btn,card,correct,kind);
+    else onWrong(btn);
+  }
+}
+
+function onCorrect(btn,card){
+  locked=true;
+  document.querySelectorAll('.tile').forEach(t=>t.classList.add('lock'));
+  btn.classList.add('correct');
+  stars++; correctCount++; $('starBox').textContent='⭐ '+stars;
+  $('feedback').textContent=PRAISE[Math.random()*PRAISE.length|0];
+  $('feedback').style.color='var(--good-dark)';
+  sfxCorrect(); burstConfetti();
+  setTimeout(()=>speakEN(card.word),120);
+  $('nextBtn').classList.remove('hidden');
+}
+
+/* Cơ bản: sai thì thử lại */
+function onWrong(btn){
+  btn.classList.add('wrong'); $('flash').classList.add('shake');
+  $('feedback').textContent=RETRY[Math.random()*RETRY.length|0]; $('feedback').style.color='var(--bad)';
+  sfxWrong();
+  setTimeout(()=>{ btn.classList.remove('wrong'); $('flash').classList.remove('shake'); $('feedback').textContent=''; $('feedback').style.color='var(--good-dark)'; },650);
+}
+
+/* Nâng cao: sai thì hiện đáp án rồi qua câu mới */
+function onWrongAdvanced(btn,card,correct,kind){
+  locked=true;
+  document.querySelectorAll('.tile').forEach(t=>t.classList.add('lock'));
+  btn.classList.add('wrong');
+  if(kind==='letter'){ const s=$('slot'); s.textContent=correct; s.classList.add('filled'); markCorrectTile('#choices',correct); }
+  else { markCorrectTile('#imgChoices',card.emoji); }
+  $('feedback').textContent='Đáp án đúng: '+card.word+' 😅';
+  $('feedback').style.color='var(--bad)';
+  sfxWrong(); speakEN(card.word);
+  setTimeout(next, 1600);
+}
+
+function next(){
+  idx++;
+  if(idx>=theme.cards.length){ $('bar').style.width='100%'; winScreen(); }
+  else renderCard();
+}
+
+function winScreen(){
+  show('winScreen'); bigConfetti();
+  if(level==='advanced'){
+    const total=theme.cards.length, pct=Math.round(correctCount/total*100);
+    let msg = pct>=90?'Xuất sắc! 🏅' : pct>=70?'Giỏi lắm! 👍' : pct>=50?'Khá tốt, cố thêm nhé!' : 'Cố gắng thêm nha! 💪';
+    $('winHead').textContent='Tổng kết';
+    $('winScore').textContent=`${correctCount} / ${total}`;
+    $('winScore').classList.remove('hidden');
+    $('winText').textContent=`Bạn đúng ${pct}% câu — ${msg}`;
+    speakEN('Well done');
+  }else{
+    $('winHead').textContent='Hoàn thành!';
+    $('winScore').classList.add('hidden');
+    $('winText').textContent=`Bé đã hoàn thành chủ đề "${theme.name}" với ${stars} ⭐!`;
+    speakEN('Well done');
+  }
+}
+
+function makeConfetti(n){
+  const c=$('confetti'); c.classList.remove('hidden'); c.innerHTML='';
+  const cols=['#ff7a7a','#ffce4d','#5fd39a','#6fc3ff','#9d8bff','#ff9d4d'];
+  for(let i=0;i<n;i++){const b=document.createElement('b');b.style.left=Math.random()*100+'%';b.style.background=cols[i%cols.length];b.style.animationDuration=(1.6+Math.random()*1.4)+'s';b.style.animationDelay=(Math.random()*0.4)+'s';c.appendChild(b);}
+  setTimeout(()=>{c.classList.add('hidden');c.innerHTML='';},3200);
+}
+const burstConfetti=()=>makeConfetti(24);
+const bigConfetti=()=>makeConfetti(70);
+
+$('nextBtn').onclick=next;
+$('speakBtn').onclick=()=>{ const c=theme.cards[order[idx]]; speakEN(c.word); };
+$('backBtn').onclick=()=>{ $('title').textContent='🎈 Bé Học Chữ'; show('homeScreen'); };
+$('playAgain').onclick=()=>startTheme(theme);
+$('winHome').onclick=()=>{ $('title').textContent='🎈 Bé Học Chữ'; show('homeScreen'); };
+
+buildHome(); show('homeScreen');
+</script>
+</body>
+</html>

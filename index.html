@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎮 Góc Chơi Của Bé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{ --nen:#FFF8EC; --muc:#3A2E39; --do:#FF5A5F; --xanh:#2EA8E0; --vang:#FFC93C; --tim:#9B6BDF; }
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{
+  margin:0; font-family:'Baloo 2',system-ui,sans-serif; background:var(--nen); color:var(--muc);
+  min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center;
+  padding:24px 16px;
+}
+h1{font-size:clamp(30px,6vw,44px); font-weight:800; margin:10px 0 4px; text-align:center;}
+h1 span{color:var(--do);}
+.phude{margin:0 0 30px; opacity:.7; font-size:17px; text-align:center;}
+.menu{display:flex; flex-direction:column; gap:18px; width:100%; max-width:480px;}
+.game{
+  display:flex; align-items:center; gap:16px; text-decoration:none; color:var(--muc);
+  background:#fff; border:4px solid var(--muc); border-radius:24px; padding:16px 20px;
+  box-shadow:0 6px 0 var(--muc); transition:transform .08s;
+}
+.game:active{transform:translateY(4px); box-shadow:0 2px 0 var(--muc);}
+.game .icon{
+  width:72px; height:72px; border-radius:18px; border:3px solid var(--muc);
+  display:flex; align-items:center; justify-content:center; font-size:40px; flex-shrink:0;
+}
+.game:nth-child(1) .icon{background:var(--vang);}
+.game:nth-child(2) .icon{background:var(--xanh);}
+.game:nth-child(3) .icon{background:var(--do);}
+.game h2{margin:0; font-size:21px; font-weight:800;}
+.game p{margin:2px 0 0; font-size:14px; opacity:.7; line-height:1.3;}
+.game .muiten{margin-left:auto; font-size:24px; flex-shrink:0;}
+footer{margin-top:auto; padding-top:30px; font-size:13px; opacity:.5; text-align:center;}
+</style>
+</head>
+<body>
+<h1>🎮 Góc Chơi <span>Của Bé</span></h1>
+<p class="phude">Chọn một trò chơi để bắt đầu nhé!</p>
+
+<nav class="menu">
+  <a class="game" href="lat-the-bai.html">
+    <div class="icon">🃏</div>
+    <div><h2>Lật Thẻ Bài</h2><p>Tìm cặp thẻ giống nhau — luyện trí nhớ</p></div>
+    <div class="muiten">➜</div>
+  </a>
+  <a class="game" href="be-hoc-chu.html">
+    <div class="icon">🔤</div>
+    <div><h2>Bé Học Chữ</h2><p>Học từ vựng tiếng Anh qua thẻ hình</p></div>
+    <div class="muiten">➜</div>
+  </a>
+  <a class="game" href="doan-xem-toi-la-ai.html">
+    <div class="icon">🕵️</div>
+    <div><h2>Đoán Xem Tôi Là Ai?</h2><p>2 người – 2 thiết bị, đoán thẻ bí mật</p></div>
+    <div class="muiten">➜</div>
+  </a>
+</nav>
+
+<footer>Copyright © 2026 Nguyễn Quốc Thi</footer>
+</body>
+</html>

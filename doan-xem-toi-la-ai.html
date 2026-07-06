@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Đoán Xem Tôi Là Ai 🕵️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nen:#FFF8EC; --do:#FF5A5F; --xanh:#2EA8E0; --vang:#FFC93C;
+  --muc:#3A2E39; --trang:#FFFFFF; --xam:#EDE4D3;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Baloo 2',system-ui,sans-serif; background:var(--nen); color:var(--muc);
+  min-height:100vh; min-height:100dvh;
+}
+.man{display:none; max-width:860px; margin:0 auto; padding:16px;}
+.man.hien{display:block;}
+
+/* ===== Trang chủ ===== */
+.logo{text-align:center; font-size:34px; font-weight:800; margin:28px 0 4px; line-height:1.15;}
+.logo span{color:var(--do);}
+.phude{text-align:center; margin:0 0 26px; font-size:16px; opacity:.75;}
+.the-hop{background:var(--trang); border:3px solid var(--muc); border-radius:22px;
+  box-shadow:0 6px 0 var(--muc); padding:20px; margin:0 auto 18px; max-width:420px;}
+.the-hop h2{margin:0 0 10px; font-size:20px;}
+input[type=text]{
+  width:100%; font-family:inherit; font-size:18px; font-weight:700; padding:12px 14px;
+  border:3px solid var(--muc); border-radius:14px; background:var(--nen); color:var(--muc);
+  text-transform:uppercase; outline:none;
+}
+input[type=text]:focus{border-color:var(--xanh);}
+.nut{
+  display:block; width:100%; font-family:inherit; font-size:18px; font-weight:800;
+  padding:13px; margin-top:12px; border:3px solid var(--muc); border-radius:16px;
+  background:var(--vang); color:var(--muc); cursor:pointer; box-shadow:0 4px 0 var(--muc);
+  transition:transform .05s;
+}
+.nut:active{transform:translateY(3px); box-shadow:0 1px 0 var(--muc);}
+.nut.do{background:var(--do); color:#fff;}
+.nut.xanh{background:var(--xanh); color:#fff;}
+.nut.nho{width:auto; display:inline-block; font-size:15px; padding:8px 16px; margin-top:0;}
+
+/* ===== Phòng chờ ===== */
+.ma-phong{
+  font-size:52px; font-weight:800; letter-spacing:10px; text-align:center;
+  background:var(--trang); border:3px dashed var(--do); border-radius:18px; padding:14px; margin:14px 0;
+}
+.cho-doi{text-align:center; font-size:17px;}
+.cham{display:inline-block; animation:nhay 1.2s infinite;}
+.cham:nth-child(2){animation-delay:.2s;} .cham:nth-child(3){animation-delay:.4s;}
+@keyframes nhay{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+/* ===== Bàn chơi ===== */
+.thanh-tren{display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+.luot{
+  font-size:16px; font-weight:800; padding:8px 16px; border-radius:999px;
+  border:3px solid var(--muc); background:var(--xam);
+}
+.luot.toi{background:var(--vang);}
+.bang{
+  display:grid; grid-template-columns:repeat(6,1fr); gap:8px;
+  background:var(--xanh); border:4px solid var(--muc); border-radius:20px; padding:12px;
+  box-shadow:0 6px 0 var(--muc);
+}
+@media (max-width:520px){ .bang{grid-template-columns:repeat(5,1fr);} }
+.the{
+  aspect-ratio:3/4; border:3px solid var(--muc); border-radius:12px; background:var(--trang);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  cursor:pointer; user-select:none; position:relative; transition:transform .15s;
+}
+.the .emo{font-size:clamp(26px,6vw,44px); line-height:1;}
+.the .ten{font-size:clamp(9px,2vw,13px); font-weight:700; text-align:center; padding:0 2px;}
+.the.up{background:var(--do);}
+.the.up .emo,.the.up .ten{visibility:hidden;}
+.the.up::after{content:"?"; position:absolute; inset:0; display:flex; align-items:center;
+  justify-content:center; font-size:34px; font-weight:800; color:#fff;}
+.the.chon-doan{outline:4px solid var(--vang); transform:scale(1.06); z-index:1;}
+
+.bi-mat{
+  position:sticky; bottom:8px; margin-top:14px; display:flex; align-items:center; gap:12px;
+  background:var(--trang); border:3px solid var(--muc); border-radius:18px; padding:10px 14px;
+  box-shadow:0 5px 0 var(--muc);
+}
+.bi-mat .khung{
+  width:58px; aspect-ratio:3/4; border:3px solid var(--muc); border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--vang);
+  flex-shrink:0;
+}
+.bi-mat .khung .emo{font-size:28px;}
+.bi-mat .khung .ten{font-size:9px; font-weight:700;}
+.bi-mat p{margin:0; font-size:14px; line-height:1.35; flex:1;}
+.hang-nut{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+.hang-nut .nut{flex:1; margin-top:0; min-width:140px;}
+.nut.dang-doan{background:var(--do); color:#fff;}
+
+/* ===== Kết quả ===== */
+.ket-qua{text-align:center; padding:40px 16px;}
+.ket-qua .to{font-size:76px; margin-bottom:8px;}
+.ket-qua h2{font-size:30px; margin:0 0 8px;}
+.ket-qua p{font-size:17px; margin:0 0 22px;}
+
+.thongbao{
+  position:fixed; left:50%; bottom:90px; transform:translateX(-50%);
+  background:var(--muc); color:#fff; font-size:15px; font-weight:700;
+  padding:10px 20px; border-radius:999px; opacity:0; pointer-events:none; transition:opacity .3s;
+  max-width:90vw; text-align:center; z-index:99;
+}
+.thongbao.hien{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- ===== MÀN HÌNH: TRANG CHỦ ===== -->
+<div class="man hien" id="manChu">
+  <h1 class="logo">🕵️ Đoán Xem<br><span>Tôi Là Ai?</span></h1>
+  <p class="phude">Con vật &amp; Trái cây — 2 người, 2 thiết bị</p>
+
+  <div class="the-hop">
+    <h2>Tên của bạn</h2>
+    <input type="text" id="oTen" maxlength="12" placeholder="VD: BỐ, MẸ, TÍ...">
+  </div>
+
+  <div class="the-hop">
+    <h2>🏠 Tạo phòng mới</h2>
+    <button class="nut do" onclick="taoPhong()">Tạo phòng</button>
+  </div>
+
+  <div class="the-hop">
+    <h2>🔑 Vào phòng có sẵn</h2>
+    <input type="text" id="oMa" maxlength="4" placeholder="Nhập mã 4 chữ">
+    <button class="nut xanh" onclick="vaoPhong()">Vào phòng</button>
+  </div>
+</div>
+
+<!-- ===== MÀN HÌNH: PHÒNG CHỜ ===== -->
+<div class="man" id="manCho">
+  <h1 class="logo">Phòng của bạn</h1>
+  <div class="ma-phong" id="hienMa">----</div>
+  <p class="cho-doi">Đọc mã này cho người chơi kia nhập vào máy của họ<br><br>
+    Đang chờ người chơi thứ 2 <span class="cham">●</span><span class="cham">●</span><span class="cham">●</span></p>
+  <div style="text-align:center; margin-top:20px;">
+    <button class="nut nho" onclick="thoatPhong()">← Thoát</button>
+  </div>
+</div>
+
+<!-- ===== MÀN HÌNH: BÀN CHƠI ===== -->
+<div class="man" id="manChoi">
+  <div class="thanh-tren">
+    <div class="luot" id="hienLuot">Lượt: ...</div>
+    <button class="nut nho" onclick="thoatPhong()">Thoát</button>
+  </div>
+
+  <div class="bang" id="bang"></div>
+
+  <div class="bi-mat">
+    <div class="khung"><div class="emo" id="bmEmo">❓</div><div class="ten" id="bmTen"></div></div>
+    <p><b>Thẻ bí mật của bạn.</b> Đối phương phải đoán ra thẻ này!<br>
+    Chạm vào thẻ trên bàn để úp thẻ đã loại (chỉ máy bạn thấy).</p>
+  </div>
+
+  <div class="hang-nut">
+    <button class="nut" id="nutDoan" onclick="batTatDoan()">🎯 Đoán thẻ đối phương</button>
+    <button class="nut xanh" id="nutLuot" onclick="ketThucLuot()">Kết thúc lượt ➜</button>
+  </div>
+</div>
+
+<!-- ===== MÀN HÌNH: KẾT QUẢ ===== -->
+<div class="man" id="manXong">
+  <div class="ket-qua">
+    <div class="to" id="kqIcon">🏆</div>
+    <h2 id="kqTieuDe">...</h2>
+    <p id="kqChiTiet"></p>
+    <button class="nut do" style="max-width:280px; margin:0 auto;" onclick="choiLai()">Chơi ván mới</button>
+  </div>
+</div>
+
+<div class="thongbao" id="thongBao"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ================================================================
+   ⚙️ BƯỚC 1: DÁN FIREBASE CONFIG CỦA ANH VÀO ĐÂY
+   (Firebase Console → Project Settings → Your apps → Config)
+================================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "DÁN_VÀO_ĐÂY",
+  authDomain: "DÁN_VÀO_ĐÂY",
+  projectId: "DÁN_VÀO_ĐÂY",
+  storageBucket: "DÁN_VÀO_ĐÂY",
+  messagingSenderId: "DÁN_VÀO_ĐÂY",
+  appId: "DÁN_VÀO_ĐÂY"
+};
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+const PHONG = db.collection('guesswho_rooms');
+
+/* ===== 30 thẻ: 15 con vật + 15 trái cây ===== */
+const BO_THE = [
+  {e:"🐶",t:"Chó"},{e:"🐱",t:"Mèo"},{e:"🐭",t:"Chuột"},{e:"🐰",t:"Thỏ"},{e:"🦊",t:"Cáo"},
+  {e:"🐻",t:"Gấu"},{e:"🐼",t:"Gấu trúc"},{e:"🐯",t:"Hổ"},{e:"🦁",t:"Sư tử"},{e:"🐮",t:"Bò"},
+  {e:"🐷",t:"Heo"},{e:"🐸",t:"Ếch"},{e:"🐵",t:"Khỉ"},{e:"🐔",t:"Gà"},{e:"🐧",t:"Cánh cụt"},
+  {e:"🍎",t:"Táo đỏ"},{e:"🍏",t:"Táo xanh"},{e:"🍌",t:"Chuối"},{e:"🍇",t:"Nho"},{e:"🍉",t:"Dưa hấu"},
+  {e:"🍊",t:"Cam"},{e:"🍓",t:"Dâu tây"},{e:"🍒",t:"Cherry"},{e:"🍑",t:"Đào"},{e:"🍍",t:"Thơm"},
+  {e:"🥭",t:"Xoài"},{e:"🥝",t:"Kiwi"},{e:"🍋",t:"Chanh"},{e:"🍐",t:"Lê"},{e:"🍈",t:"Dưa lưới"}
+];
+
+/* ===== Trạng thái ===== */
+let maPhong = null, vaiTro = null, huyLangNghe = null;
+let dangDoan = false, theDoan = -1, duLieuPhong = null;
+const theUp = new Set(); // úp thẻ chỉ lưu trên máy này
+
+function $(id){ return document.getElementById(id); }
+function doiMan(id){
+  document.querySelectorAll('.man').forEach(m=>m.classList.remove('hien'));
+  $(id).classList.add('hien');
+}
+function baoNhanh(msg){
+  const t = $('thongBao'); t.textContent = msg; t.classList.add('hien');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('hien'), 2200);
+}
+function layTen(){
+  const ten = $('oTen').value.trim().toUpperCase();
+  if(!ten){ baoNhanh('Nhập tên của bạn trước nhé!'); return null; }
+  return ten;
+}
+function sinhMa(){
+  const c = 'ABCDEFGHKMNPQRSTUVXYZ23456789'; let m = '';
+  for(let i=0;i<4;i++) m += c[Math.floor(Math.random()*c.length)];
+  return m;
+}
+const ngauNhien = () => Math.floor(Math.random()*BO_THE.length);
+
+/* ===== Tạo / vào phòng ===== */
+async function taoPhong(){
+  const ten = layTen(); if(!ten) return;
+  maPhong = sinhMa(); vaiTro = 'host';
+  try{
+    await PHONG.doc(maPhong).set({
+      tenHost: ten, tenGuest: null,
+      biMatHost: ngauNhien(), biMatGuest: null,
+      luot: 'host', trangThai: 'cho', nguoiThang: null,
+      tao: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    $('hienMa').textContent = maPhong;
+    doiMan('manCho');
+    langNghe();
+  }catch(e){ baoNhanh('Lỗi kết nối Firebase: ' + e.message); }
+}
+
+async function vaoPhong(){
+  const ten = layTen(); if(!ten) return;
+  const ma = $('oMa').value.trim().toUpperCase();
+  if(ma.length !== 4){ baoNhanh('Mã phòng gồm 4 ký tự nhé!'); return; }
+  try{
+    const doc = await PHONG.doc(ma).get();
+    if(!doc.exists){ baoNhanh('Không tìm thấy phòng ' + ma); return; }
+    if(doc.data().tenGuest){ baoNhanh('Phòng này đã đủ 2 người!'); return; }
+    maPhong = ma; vaiTro = 'guest';
+    await PHONG.doc(ma).update({
+      tenGuest: ten, biMatGuest: ngauNhien(), trangThai: 'choi'
+    });
+    langNghe();
+  }catch(e){ baoNhanh('Lỗi kết nối Firebase: ' + e.message); }
+}
+
+/* ===== Lắng nghe realtime ===== */
+function langNghe(){
+  if(huyLangNghe) huyLangNghe();
+  huyLangNghe = PHONG.doc(maPhong).onSnapshot(doc=>{
+    if(!doc.exists){ baoNhanh('Phòng đã đóng.'); veTrangChu(); return; }
+    duLieuPhong = doc.data();
+    capNhat();
+  });
+}
+
+function capNhat(){
+  const d = duLieuPhong;
+  if(d.trangThai === 'cho'){ doiMan('manCho'); return; }
+  if(d.trangThai === 'xong'){ hienKetQua(); return; }
+
+  // Đang chơi
+  if(!$('manChoi').classList.contains('hien')){
+    veBang(); doiMan('manChoi');
+    const bm = BO_THE[vaiTro==='host' ? d.biMatHost : d.biMatGuest];
+    $('bmEmo').textContent = bm.e; $('bmTen').textContent = bm.t;
+  }
+  const luotToi = d.luot === vaiTro;
+  const tenKia = vaiTro==='host' ? d.tenGuest : d.tenHost;
+  $('hienLuot').textContent = luotToi ? '🟡 Lượt của BẠN' : '⏳ Lượt của ' + tenKia;
+  $('hienLuot').classList.toggle('toi', luotToi);
+  $('nutLuot').style.visibility = luotToi ? 'visible' : 'hidden';
+  $('nutDoan').style.visibility = luotToi ? 'visible' : 'hidden';
+}
+
+/* ===== Vẽ bàn 30 thẻ ===== */
+function veBang(){
+  const b = $('bang'); b.innerHTML = '';
+  BO_THE.forEach((the,i)=>{
+    const o = document.createElement('div');
+    o.className = 'the' + (theUp.has(i) ? ' up' : '');
+    o.innerHTML = `<div class="emo">${the.e}</div><div class="ten">${the.t}</div>`;
+    o.onclick = ()=>chamThe(i,o);
+    b.appendChild(o);
+  });
+}
+
+function chamThe(i, o){
+  if(dangDoan){
+    theDoan = i;
+    document.querySelectorAll('.the').forEach(t=>t.classList.remove('chon-doan'));
+    o.classList.add('chon-doan');
+    if(confirm('Đoán thẻ bí mật của đối phương là "' + BO_THE[i].t + '"?\n⚠️ Đoán sai sẽ THUA luôn!')){
+      guiDoan(i);
+    }else{
+      o.classList.remove('chon-doan'); theDoan = -1;
+    }
+    return;
+  }
+  // Úp / mở thẻ loại trừ (chỉ máy mình)
+  if(theUp.has(i)) theUp.delete(i); else theUp.add(i);
+  o.classList.toggle('up');
+}
+
+/* ===== Đoán ===== */
+function batTatDoan(){
+  if(duLieuPhong.luot !== vaiTro){ baoNhanh('Chưa tới lượt bạn!'); return; }
+  dangDoan = !dangDoan;
+  $('nutDoan').classList.toggle('dang-doan', dangDoan);
+  $('nutDoan').textContent = dangDoan ? '❌ Hủy đoán' : '🎯 Đoán thẻ đối phương';
+  if(dangDoan) baoNhanh('Chạm vào thẻ bạn muốn đoán');
+}
+
+async function guiDoan(i){
+  const biMatKia = vaiTro==='host' ? duLieuPhong.biMatGuest : duLieuPhong.biMatHost;
+  const dung = (i === biMatKia);
+  const thang = dung ? vaiTro : (vaiTro==='host' ? 'guest' : 'host');
+  await PHONG.doc(maPhong).update({
+    trangThai: 'xong', nguoiThang: thang,
+    theDaDoan: i, doanDung: dung, nguoiDoan: vaiTro
+  });
+}
+
+async function ketThucLuot(){
+  if(duLieuPhong.luot !== vaiTro){ baoNhanh('Chưa tới lượt bạn!'); return; }
+  await PHONG.doc(maPhong).update({ luot: vaiTro==='host' ? 'guest' : 'host' });
+}
+
+/* ===== Kết quả ===== */
+function hienKetQua(){
+  const d = duLieuPhong;
+  const toiThang = d.nguoiThang === vaiTro;
+  const theBiDoan = BO_THE[d.theDaDoan];
+  const bmToi = BO_THE[vaiTro==='host' ? d.biMatHost : d.biMatGuest];
+  $('kqIcon').textContent = toiThang ? '🏆' : '😅';
+  $('kqTieuDe').textContent = toiThang ? 'Bạn THẮNG rồi!' : 'Bạn thua mất rồi!';
+  let chiTiet;
+  if(d.nguoiDoan === vaiTro){
+    chiTiet = d.doanDung
+      ? `Bạn đoán "${theBiDoan.t}" — chính xác! 🎉`
+      : `Bạn đoán "${theBiDoan.t}" nhưng sai rồi. 😢`;
+  }else{
+    chiTiet = d.doanDung
+      ? `Đối phương đoán trúng thẻ "${bmToi.t}" của bạn.`
+      : `Đối phương đoán "${theBiDoan.t}" — sai! Thẻ của bạn là "${bmToi.t}". 🎉`;
+  }
+  $('kqChiTiet').textContent = chiTiet;
+  doiMan('manXong');
+}
+
+/* ===== Chơi lại / thoát ===== */
+async function choiLai(){
+  theUp.clear(); dangDoan = false; theDoan = -1;
+  if(vaiTro === 'host'){
+    await PHONG.doc(maPhong).update({
+      biMatHost: ngauNhien(), biMatGuest: ngauNhien(),
+      luot: 'host', trangThai: 'choi', nguoiThang: null,
+      theDaDoan: firebase.firestore.FieldValue.delete(),
+      doanDung: firebase.firestore.FieldValue.delete(),
+      nguoiDoan: firebase.firestore.FieldValue.delete()
+    });
+  }
+  $('manChoi').classList.remove('hien'); // buộc vẽ lại bàn
+  baoNhanh('Ván mới bắt đầu!');
+}
+
+async function thoatPhong(){
+  if(huyLangNghe){ huyLangNghe(); huyLangNghe = null; }
+  if(maPhong && vaiTro === 'host'){
+    try{ await PHONG.doc(maPhong).delete(); }catch(e){}
+  }
+  veTrangChu();
+}
+function veTrangChu(){
+  maPhong = null; vaiTro = null; duLieuPhong = null;
+  theUp.clear(); dangDoan = false;
+  doiMan('manChu');
+}
+</script>
+</body>
+</html>
