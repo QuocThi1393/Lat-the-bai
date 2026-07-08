@@ -76,9 +76,13 @@ input[type=text]:focus{border-color:var(--xanh);}
 .kq-o.dung .khung{background:#8BD450;}
 .thongbao{position:fixed; left:50%; bottom:90px; transform:translateX(-50%); background:var(--muc); color:#fff; font-size:15px; font-weight:700; padding:10px 20px; border-radius:999px; opacity:0; pointer-events:none; transition:opacity .3s; max-width:90vw; text-align:center; z-index:99;}
 .thongbao.hien{opacity:1;}
+#nutHome{position:fixed; top:10px; left:10px; z-index:9999; width:44px; height:44px; border-radius:50%; background:var(--trang); border:3px solid var(--muc); box-shadow:0 3px 0 var(--muc); display:flex; align-items:center; justify-content:center; font-size:22px; text-decoration:none;}
+#nutHome:active{transform:translateY(2px); box-shadow:0 1px 0 var(--muc);}
 </style>
 </head>
 <body>
+
+<a href="index.html" id="nutHome" onclick="veMenu(event)" title="Về menu">🏠</a>
 
 <!-- TRANG CHỦ -->
 <div class="man hien" id="manChu">
@@ -194,41 +198,21 @@ const TRAI_CAY = [
 ];
 /* ⭐ NGƯỜI NỔI TIẾNG — thay bằng danh sách của anh (tên + file ảnh trong thư mục nguoi/) */
 const NGUOI = [
-  {img:"nguoi/01.webp",t:"SooBin"},
-  {img:"nguoi/02.webp",t:"HIEUTHUHAI"},
-  {img:"nguoi/03.webp",t:"Đan Trường"},
-  {img:"nguoi/04.webp",t:"Mỹ Tâm"},
-  {img:"nguoi/05.webp",t:"Hồ Ngọc Hà"},
-  {img:"nguoi/06.webp",t:"Ly Ly"},
-  {img:"nguoi/07.webp",t:"Orange"},
-  {img:"nguoi/08.webp",t:"Pháo"},
-  {img:"nguoi/09.webp",t:"Đông Nhi"},
-  {img:"nguoi/10.webp",t:"Tóc Tiên"},
-  {img:"nguoi/11.webp",t:"Vũ Cát Tường"},
-  {img:"nguoi/12.webp",t:"Phương Ly"},
-  {img:"nguoi/13.webp",t:"Minh Hằng"},
-  {img:"nguoi/14.webp",t:"Hoàng Thùy Linh"},
-  {img:"nguoi/15.webp",t:"Đen"},
-  {img:"nguoi/16.webp",t:"Hoàng Dũng"},
-  {img:"nguoi/17.webp",t:"Vũ"},
-  {img:"nguoi/18.webp",t:"Hà Anh Tuấn"},
-  {img:"nguoi/19.webp",t:"Đức Phúc"},
-  {img:"nguoi/20.webp",t:"Phan Mạnh Quỳnh"},
-  {img:"nguoi/21.webp",t:"Táo"},
-  {img:"nguoi/22.webp",t:"Erik"},
-  {img:"nguoi/23.webp",t:"Gray D"},
-  {img:"nguoi/24.webp",t:"Trúc Nhân"},
-  {img:"nguoi/25.webp",t:"Ưng Hoàng Phúc"},
-  {img:"nguoi/26.webp",t:"Sơn Tùng MTP"},
-  {img:"nguoi/27.webp",t:"J97"},
-  {img:"nguoi/28.webp",t:"Noo Phước Thịnh"},
-  {img:"nguoi/29.webp",t:"MCK"},
-  {img:"nguoi/30.webp",t:"Karik"}
+  {img:"nguoi/01.webp",t:"Người 1"},{img:"nguoi/02.webp",t:"Người 2"},{img:"nguoi/03.webp",t:"Người 3"},
+  {img:"nguoi/04.webp",t:"Người 4"},{img:"nguoi/05.webp",t:"Người 5"},{img:"nguoi/06.webp",t:"Người 6"},
+  {img:"nguoi/07.webp",t:"Người 7"},{img:"nguoi/08.webp",t:"Người 8"},{img:"nguoi/09.webp",t:"Người 9"},
+  {img:"nguoi/10.webp",t:"Người 10"},{img:"nguoi/11.webp",t:"Người 11"},{img:"nguoi/12.webp",t:"Người 12"},
+  {img:"nguoi/13.webp",t:"Người 13"},{img:"nguoi/14.webp",t:"Người 14"},{img:"nguoi/15.webp",t:"Người 15"},
+  {img:"nguoi/16.webp",t:"Người 16"},{img:"nguoi/17.webp",t:"Người 17"},{img:"nguoi/18.webp",t:"Người 18"},
+  {img:"nguoi/19.webp",t:"Người 19"},{img:"nguoi/20.webp",t:"Người 20"},{img:"nguoi/21.webp",t:"Người 21"},
+  {img:"nguoi/22.webp",t:"Người 22"},{img:"nguoi/23.webp",t:"Người 23"},{img:"nguoi/24.webp",t:"Người 24"},
+  {img:"nguoi/25.webp",t:"Người 25"},{img:"nguoi/26.webp",t:"Người 26"},{img:"nguoi/27.webp",t:"Người 27"},
+  {img:"nguoi/28.webp",t:"Người 28"},{img:"nguoi/29.webp",t:"Người 29"},{img:"nguoi/30.webp",t:"Người 30"}
 ];
 const DANH_MUC = { convat:CON_VAT, traicay:TRAI_CAY, nguoi:NGUOI };
 
 let maPhong=null, vaiTro=null, huyLangNghe=null;
-let dangDoan=false, duLieuPhong=null, cdHienTai='convat';
+let dangDoan=false, duLieuPhong=null, cdHienTai='convat', vanDaVe=0;
 const theUp = new Set();
 
 function $(id){ return document.getElementById(id); }
@@ -258,7 +242,7 @@ async function taoPhong(){
   maPhong = sinhMa(); vaiTro='host';
   try{
     await PHONG.doc(maPhong).set({
-      tenHost:ten, tenGuest:null, danhMuc:cdHienTai,
+      tenHost:ten, tenGuest:null, danhMuc:cdHienTai, van:1,
       biMatHost:ngauNhien(), biMatGuest:null,
       luot:'host', trangThai:'cho', nguoiThang:null,
       tao: firebase.firestore.FieldValue.serverTimestamp()
@@ -290,9 +274,13 @@ function capNhat(){
   const d = duLieuPhong;
   if(d.trangThai==='cho'){ doiMan('manCho'); return; }
   if(d.trangThai==='xong'){ hienKetQua(); return; }
-  if(!$('manChoi').classList.contains('hien')){
-    veBang(); doiMan('manChoi');
+  const van = d.van || 1;
+  if(van !== vanDaVe){
+    vanDaVe = van;
+    theUp.clear();
+    veBang();
     veMat($('bmKhung'), deck()[vaiTro==='host'?d.biMatHost:d.biMatGuest]);
+    doiMan('manChoi');
   }
   const luotToi = d.luot===vaiTro;
   const tenKia = vaiTro==='host'?d.tenGuest:d.tenHost;
@@ -359,18 +347,25 @@ function hienKetQua(){
   doiMan('manXong');
 }
 async function choiLai(){
-  theUp.clear(); dangDoan=false;
-  if(vaiTro==='host'){
+  dangDoan=false;
+  const d = duLieuPhong;
+  try{
     await PHONG.doc(maPhong).update({
+      van: (d.van||1)+1,
       biMatHost:ngauNhien(), biMatGuest:ngauNhien(),
       luot:'host', trangThai:'choi', nguoiThang:null,
       theDaDoan:firebase.firestore.FieldValue.delete(),
       doanDung:firebase.firestore.FieldValue.delete(),
       nguoiDoan:firebase.firestore.FieldValue.delete()
     });
-  }
-  $('manChoi').classList.remove('hien');
-  baoNhanh('Ván mới bắt đầu!');
+    baoNhanh('Ván mới bắt đầu!');
+  }catch(e){ baoNhanh('Lỗi: '+e.message); }
+}
+async function veMenu(e){
+  if(e) e.preventDefault();
+  if(huyLangNghe){ huyLangNghe(); huyLangNghe=null; }
+  if(maPhong && vaiTro==='host'){ try{ await PHONG.doc(maPhong).delete(); }catch(err){} }
+  location.href='index.html';
 }
 async function thoatPhong(){
   if(huyLangNghe){ huyLangNghe(); huyLangNghe=null; }
