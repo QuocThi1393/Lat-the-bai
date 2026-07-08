@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
 <style>
-:root{ --nen:#FFF8EC; --muc:#3A2E39; --do:#FF5A5F; --xanh:#2EA8E0; --vang:#FFC93C; --tim:#9B6BDF; }
+:root{ --nen:#FFF8EC; --muc:#3A2E39; --do:#FF5A5F; --xanh:#2EA8E0; --vang:#FFC93C; --tim:#9B6BDF; --luc:#5FBF77; }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 body{
   margin:0; font-family:'Baloo 2',system-ui,sans-serif; background:var(--nen); color:var(--muc);
@@ -17,7 +17,7 @@ body{
 h1{font-size:clamp(30px,6vw,44px); font-weight:800; margin:10px 0 4px; text-align:center;}
 h1 span{color:var(--do);}
 .phude{margin:0 0 30px; opacity:.7; font-size:17px; text-align:center;}
-.menu{display:flex; flex-direction:column; gap:18px; width:100%; max-width:480px;}
+.menu{display:flex; flex-direction:column; gap:16px; width:100%; max-width:480px;}
 .game{
   display:flex; align-items:center; gap:16px; text-decoration:none; color:var(--muc);
   background:#fff; border:4px solid var(--muc); border-radius:24px; padding:16px 20px;
@@ -25,15 +25,13 @@ h1 span{color:var(--do);}
 }
 .game:active{transform:translateY(4px); box-shadow:0 2px 0 var(--muc);}
 .game .icon{
-  width:72px; height:72px; border-radius:18px; border:3px solid var(--muc);
-  display:flex; align-items:center; justify-content:center; font-size:40px; flex-shrink:0;
+  width:66px; height:66px; border-radius:18px; border:3px solid var(--muc);
+  display:flex; align-items:center; justify-content:center; font-size:36px; flex-shrink:0;
 }
-.game:nth-child(1) .icon{background:var(--vang);}
-.game:nth-child(2) .icon{background:var(--xanh);}
-.game:nth-child(3) .icon{background:var(--do);}
-.game h2{margin:0; font-size:21px; font-weight:800;}
-.game p{margin:2px 0 0; font-size:14px; opacity:.7; line-height:1.3;}
+.game h2{margin:0; font-size:20px; font-weight:800;}
+.game p{margin:2px 0 0; font-size:13.5px; opacity:.7; line-height:1.3;}
 .game .muiten{margin-left:auto; font-size:24px; flex-shrink:0;}
+.nhom{font-size:14px; font-weight:800; opacity:.55; margin:22px 0 2px; width:100%; max-width:480px; text-transform:uppercase; letter-spacing:1px;}
 footer{margin-top:auto; padding-top:30px; font-size:13px; opacity:.5; text-align:center;}
 </style>
 </head>
@@ -41,20 +39,35 @@ footer{margin-top:auto; padding-top:30px; font-size:13px; opacity:.5; text-align
 <h1>🎮 Góc Chơi <span>Của Bé</span></h1>
 <p class="phude">Chọn một trò chơi để bắt đầu nhé!</p>
 
+<div class="nhom" style="margin-top:6px;">🧒 Chơi một mình</div>
 <nav class="menu">
   <a class="game" href="lat-the-bai.html">
-    <div class="icon">🃏</div>
+    <div class="icon" style="background:var(--vang)">🃏</div>
     <div><h2>Lật Thẻ Bài</h2><p>Tìm cặp thẻ giống nhau — luyện trí nhớ</p></div>
     <div class="muiten">➜</div>
   </a>
   <a class="game" href="be-hoc-chu.html">
-    <div class="icon">🔤</div>
+    <div class="icon" style="background:var(--xanh)">🔤</div>
     <div><h2>Bé Học Chữ</h2><p>Học từ vựng tiếng Anh qua thẻ hình</p></div>
     <div class="muiten">➜</div>
   </a>
+</nav>
+
+<div class="nhom">👨‍👩‍👧 Chơi 2 người · 2 máy</div>
+<nav class="menu">
   <a class="game" href="doan-xem-toi-la-ai.html">
-    <div class="icon">🕵️</div>
-    <div><h2>Đoán Xem Tôi Là Ai?</h2><p>2 người – 2 thiết bị, đoán thẻ bí mật</p></div>
+    <div class="icon" style="background:var(--do)">🕵️</div>
+    <div><h2>Đoán Xem Tôi Là Ai?</h2><p>Đoán thẻ bí mật của đối phương</p></div>
+    <div class="muiten">➜</div>
+  </a>
+  <a class="game" href="caro.html">
+    <div class="icon" style="background:var(--tim);color:#fff">⭕</div>
+    <div><h2>Cờ Caro</h2><p>Nối 5 ô thẳng hàng để thắng</p></div>
+    <div class="muiten">➜</div>
+  </a>
+  <a class="game" href="ban-tau.html">
+    <div class="icon" style="background:var(--luc)">🚢</div>
+    <div><h2>Bắn Tàu</h2><p>Bắn chìm hết hạm đội đối phương</p></div>
     <div class="muiten">➜</div>
   </a>
 </nav>
